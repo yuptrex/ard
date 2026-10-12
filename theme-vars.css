@@ -1,0 +1,34 @@
+/* ===========================================================
+   CSK Visual Theme — Phase 1
+   Design tokens. Loaded after game-core.css / home-base.css.
+   Only visual tokens here — no layout, no IDs renamed.
+   =========================================================== */
+:root{
+  /* brand */
+  --csk-amber:#ffb02e;
+  --csk-amber-soft:#ffd067;
+  --csk-amber-deep:#ff7a1f;
+  --csk-ink:#05080b;
+  --csk-ink-2:#0b121a;
+  --csk-panel:#101923;
+  --csk-panel-2:#18212c;
+  --csk-line:#2a3b4c;
+  --csk-line-soft:#ffffff1f;
+  --csk-text:#eef3f6;
+  --csk-text-dim:#8da0ad;
+
+  /* type */
+  --csk-font-display:"Rajdhani","Segoe UI",system-ui,sans-serif;
+  --csk-font-body:"Inter","Segoe UI",system-ui,sans-serif;
+
+  /* elevation */
+  --csk-shadow-1:0 1px 0 #ffffff14 inset,0 10px 24px #00000055;
+  --csk-shadow-2:0 18px 46px #000a,0 1px 0 #ffffff12 inset;
+  --csk-glow-amber:0 0 0 1px #ffb02e55,0 10px 30px -6px #ff8a1f66;
+
+  --csk-radius-sm:10px;
+  --csk-radius-md:14px;
+  --csk-radius-lg:20px;
+
+  --csk-ease:cubic-bezier(.2,.8,.2,1);
+}

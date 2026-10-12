@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "radar": {
+      "$deviceId": {
+        ".read": true,
+        ".write": true
+      }
+    }
+  }
+}

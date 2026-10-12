@@ -1,0 +1,268 @@
+/* ===========================================================
+   CSK Visual Theme — Phase 1
+   Home / menu / settings re-skin.
+   Rules here target the SAME ids/classes the game already uses
+   (#menu, .hp-*, .h-*, #st, .st-*) — nothing renamed, nothing
+   removed, so js/game.js keeps working unmodified.
+   =========================================================== */
+
+/* ---------- global type ---------- */
+#menu, #st, #pm, #ed{font-family:var(--csk-font-body)}
+#menu .hp-logo h1,
+.h-play, .h-btn, .h-map, .h-cs, .h-ico,
+#st h2, #st h3, #st b, .st-done, .act,
+.hp-sub .h-mk b{
+  font-family:var(--csk-font-display);
+}
+
+/* ---------- animated vector backdrop ---------- */
+#menu{
+  background:
+    radial-gradient(1200px 700px at 50% 8%, #1c2a3a 0%, transparent 60%),
+    var(--csk-ink);
+}
+#menu::before{
+  content:"";
+  position:absolute;inset:0;z-index:0;
+  background:url("hero-bg.svg") center 32%/cover no-repeat;
+  opacity:1;
+  animation:hbDrift 28s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+@keyframes hbDrift{
+  0%{transform:scale(1.02) translateY(0)}
+  100%{transform:scale(1.07) translateY(-1.5%)}
+}
+#menu .h-scrim{
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 30%, #05080b00 0%, #05080b8a 72%),
+    linear-gradient(180deg,#05080bb3 0%,#05080b22 22%,#05080b00 42%,#05080b3d 68%,#05080be6 100%);
+  z-index:1;
+}
+#menu .hp{position:relative;z-index:2}
+
+@media (prefers-reduced-motion:reduce){
+  #menu::before{animation:none}
+}
+
+/* ---------- logo / wordmark ---------- */
+#menu .hp-logo{position:relative}
+.hp-emb{filter:drop-shadow(0 0 18px #ffb02eaa) drop-shadow(0 4px 10px #000a)}
+#menu .hp-logo h1{
+  font-family:var(--csk-font-display);
+  font-weight:700;
+  font-style:normal;
+  letter-spacing:.01em;
+  transform:none;
+  background:linear-gradient(180deg,#fff 0%,#e9eef2 55%,#c3ccd3 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  text-shadow:0 2px 0 #00000055, 0 18px 40px #000c;
+  position:relative;
+}
+#menu .hp-logo h1 span{
+  background:linear-gradient(180deg,var(--csk-amber-soft) 0%,var(--csk-amber) 55%,var(--csk-amber-deep) 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 4px 18px #ff8a1f55);
+}
+
+/* ---------- glass card wrapper feel for the stack ---------- */
+.hp-stack{position:relative}
+
+/* ---------- inputs ---------- */
+#menu .hp input{
+  background:linear-gradient(180deg,#0e161fcc,#080d13cc);
+  border:1px solid var(--csk-line-soft);
+  box-shadow:var(--csk-shadow-1);
+  font-family:var(--csk-font-body);
+  letter-spacing:.02em;
+  transition:border-color .18s var(--csk-ease),box-shadow .18s var(--csk-ease),transform .12s var(--csk-ease);
+}
+#menu .hp input:focus-visible,
+#menu .hp input:focus{
+  outline:none;
+  border-color:var(--csk-amber);
+  box-shadow:var(--csk-shadow-1),0 0 0 3px #ffb02e33;
+}
+#menu .hp .h-jn input{letter-spacing:.32em}
+
+/* ---------- primary CTA: PLAY SOLO ---------- */
+.hp .h-play{
+  position:relative;
+  background:linear-gradient(180deg,var(--csk-amber-soft) 0%,var(--csk-amber) 48%,var(--csk-amber-deep) 100%);
+  color:#1a0d00;
+  box-shadow:0 14px 34px -8px #ff8a1f77, inset 0 1px 0 #ffffffaa, inset 0 -2px 6px #0000001f;
+  border:1px solid #ffc968;
+  overflow:hidden;
+  transition:transform .14s var(--csk-ease),box-shadow .2s var(--csk-ease),filter .15s;
+}
+.hp .h-play .ct{display:inline-flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.08em}
+.hp .h-play svg{width:22px;height:22px;filter:drop-shadow(0 1px 1px #0003)}
+.hp .h-play::before{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(115deg,transparent 30%,#ffffff66 48%,transparent 62%);
+  transform:translateX(-120%);
+  transition:transform .6s var(--csk-ease);
+  pointer-events:none;
+}
+.hp .h-play:hover{transform:translateY(-2px);box-shadow:0 20px 44px -10px #ff8a1f8c, inset 0 1px 0 #ffffffcc}
+.hp .h-play:hover::before{transform:translateX(120%)}
+.hp .h-play:active{transform:translateY(0) scale(.985)}
+
+/* ---------- divider ---------- */
+.hp-or{color:var(--csk-text-dim);font-family:var(--csk-font-display);font-weight:700}
+.hp-or::before,.hp-or::after{background:linear-gradient(90deg,transparent,#ffffff2e,transparent)}
+
+/* ---------- join row ---------- */
+.hp .h-jn .h-btn{
+  background:linear-gradient(180deg,#1c2733,#121a22);
+  border:1px solid var(--csk-line-soft);
+  box-shadow:var(--csk-shadow-1);
+}
+
+/* ---------- generic h-btn (join / sign-in) ---------- */
+.h-btn{
+  border:1px solid var(--csk-line-soft);
+  background:linear-gradient(180deg,#19232ecc,#0f161ecc);
+  box-shadow:var(--csk-shadow-1);
+  font-weight:700;letter-spacing:.1em;
+  transition:transform .12s var(--csk-ease),border-color .18s,box-shadow .18s,background .18s;
+}
+.h-btn:hover{
+  border-color:#ffb02e99;
+  background:linear-gradient(180deg,#202c3a,#131c26);
+  box-shadow:var(--csk-shadow-1),0 0 0 1px #ffb02e33;
+  transform:translateY(-1px);
+}
+.h-btn:active{transform:translateY(0) scale(.97)}
+
+/* ---------- create room pill ---------- */
+.hp-sub .h-mk{
+  background:linear-gradient(180deg,#ffd067,#ff9a1f 60%,#ff6a12);
+  color:#1a0d00;border:1px solid #ffc968;
+  box-shadow:0 8px 20px -6px #ff8a1f77, inset 0 1px 0 #ffffffaa;
+  font-weight:700;
+}
+.hp-sub .h-mk:hover{filter:brightness(1.06);transform:translateY(-1px)}
+
+/* connection status pill */
+.h-cs{
+  background:linear-gradient(180deg,#121b24cc,#0b1319cc);
+  border:1px solid var(--csk-line-soft);
+}
+.h-cs i{
+  width:7px;height:7px;border-radius:50%;background:#5a6b78;flex:none;
+  box-shadow:0 0 0 3px #ffffff0d;
+  transition:background .2s,box-shadow .2s;
+}
+.h-cs[data-s="on"] i{background:#49e08a;box-shadow:0 0 0 3px #49e08a2e,0 0 10px #49e08a99}
+.h-cs[data-s="wait"] i{background:#ffb02e;box-shadow:0 0 0 3px #ffb02e2e;animation:csPulse 1.3s ease-in-out infinite}
+.h-cs[data-s="off"] i{background:#ff5d5d;box-shadow:0 0 0 3px #ff5d5d2e}
+@keyframes csPulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ---------- map picker ---------- */
+.hp-maps{gap:10px}
+.hp-maps .h-map{
+  background:linear-gradient(180deg,#141e28cc,#0a1218cc);
+  border:1px solid var(--csk-line-soft);
+  font-weight:700;
+  transition:transform .14s var(--csk-ease),border-color .18s,box-shadow .18s,background .18s;
+}
+.hp-maps .h-map:hover{transform:translateY(-2px);border-color:#ffb02e66}
+.hp-maps .h-map.on{
+  border-color:var(--csk-amber);
+  background:linear-gradient(180deg,#2a2112,#171108);
+  box-shadow:0 0 0 1px #ffb02e55,0 10px 26px -10px #ff8a1f77;
+}
+.hp-maps .h-map.on::after{content:"●";color:var(--csk-amber)}
+
+/* ---------- account chip / gear ---------- */
+.hp-top .h-acc{
+  background:linear-gradient(180deg,#121b24e6,#0b1319e6);
+  border:1px solid var(--csk-line-soft);
+  box-shadow:var(--csk-shadow-1);
+}
+.hp-top .h-av{
+  background:linear-gradient(145deg,#2a3a4a,#141c26);
+  color:var(--csk-amber);
+  font-weight:700;
+  box-shadow:inset 0 0 0 1px #ffffff14;
+}
+#menu .hp-gear{
+  background:linear-gradient(180deg,#121b24e6,#0b1319e6);
+  border:1px solid var(--csk-line-soft);
+  box-shadow:var(--csk-shadow-1);
+  transition:border-color .18s,transform .14s var(--csk-ease),background .18s;
+}
+#menu .hp-gear:hover{border-color:#ffb02e99;transform:rotate(26deg)}
+
+/* ---------- settings dialog ---------- */
+#st{
+  background:
+    radial-gradient(1000px 600px at 50% -10%, #1c2a3a 0%, transparent 55%),
+    var(--csk-ink);
+}
+#st .st-top h2{
+  font-family:var(--csk-font-display);
+  font-weight:700;letter-spacing:.14em;
+  background:linear-gradient(180deg,#fff,#c3ccd3);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+#st .st-top span{color:var(--csk-text-dim)}
+.st-done{
+  background:linear-gradient(180deg,var(--csk-amber-soft),var(--csk-amber));
+  color:#1a0d00;border:1px solid #ffc968;font-weight:700;
+  box-shadow:0 8px 20px -6px #ff8a1f66, inset 0 1px 0 #ffffffaa;
+}
+.st-done:hover{filter:brightness(1.05)}
+
+.st-card{
+  background:linear-gradient(180deg,#121b24b3,#0b1319b3);
+  border:1px solid var(--csk-line-soft);
+  box-shadow:var(--csk-shadow-1);
+  border-radius:var(--csk-radius-md);
+}
+.st-card h3{
+  color:var(--csk-amber);
+  font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:11px;
+}
+.st-prof .h-st b{
+  font-family:var(--csk-font-display);
+  background:linear-gradient(180deg,#fff,#c3ccd3);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+
+#st .sk{background:#ffffff14;border:1px solid var(--csk-line-soft)}
+#st .sk.on,#st .sk[aria-checked="true"]{
+  background:linear-gradient(180deg,var(--csk-amber-soft),var(--csk-amber));
+  border-color:#ffc968;
+}
+#st .seg{border:1px solid var(--csk-line-soft);border-radius:var(--csk-radius-sm)}
+#st .seg button.on,#st .seg button[aria-pressed="true"]{
+  background:linear-gradient(180deg,var(--csk-amber-soft),var(--csk-amber));
+  color:#1a0d00;
+}
+.act{
+  background:linear-gradient(180deg,#19232ecc,#0f161ecc);
+  border:1px solid var(--csk-line-soft);
+  font-weight:700;letter-spacing:.08em;
+}
+.act:hover{border-color:#ffb02e99}
+
+/* ---------- focus rings everywhere ---------- */
+#menu button:focus-visible,#st button:focus-visible{
+  outline:2px solid var(--csk-amber);outline-offset:2px;
+}
+
+/* ---------- subtle entrance for the menu ---------- */
+#menu .hp-main > *{animation:hpRise .5s var(--csk-ease) both}
+#menu .hp-logo{animation-delay:0s}
+#menu .hp-stack{animation-delay:.06s}
+#menu .hp-maps{animation-delay:.12s}
+@keyframes hpRise{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@media (prefers-reduced-motion:reduce){
+  #menu .hp-main > *{animation:none}
+}

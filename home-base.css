@@ -1,0 +1,51 @@
+/* ===== v7 minimal app-style home ===== */
+#menu{display:block;overflow:hidden;background:transparent;touch-action:pan-y}
+#menu .h-scrim{background:radial-gradient(ellipse at 50% 45%,#05080b55 0,#05080bd0 85%),linear-gradient(180deg,#05080bcc,#05080b66 30%,#05080bcc)}
+#menu .h-scrim::before{display:none}
+.hp{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;overscroll-behavior:contain;
+ padding:max(env(safe-area-inset-top),12px) max(env(safe-area-inset-right),14px) max(env(safe-area-inset-bottom),12px) max(env(safe-area-inset-left),14px)}
+.hp *{box-sizing:border-box}.hp button{-webkit-tap-highlight-color:transparent}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.hp-top{flex:none;display:flex;align-items:center;justify-content:flex-end;gap:8px;width:100%;max-width:900px;margin:0 auto}
+.hp-top .h-acc{margin:0;padding:5px;border-radius:999px;gap:8px;background:#05080b99;-webkit-backdrop-filter:none;backdrop-filter:none}
+.hp-top .h-acc{flex-wrap:nowrap!important}.hp-top .h-acc .h-btn{width:auto!important}.hp-top .h-av{width:30px;height:30px;font-size:13px}
+.hp-top .h-ai{max-width:150px}.hp-top .h-ai small{display:none}
+.hp-top .h-acc .h-btn{padding:8px 13px;border-radius:999px;font-size:10.5px}
+#menu .hp-gear{flex:none;width:40px;height:40px;padding:0;margin:0;display:grid;place-items:center;border-radius:50%;background:#05080b99;-webkit-backdrop-filter:none;backdrop-filter:none}
+.hp-gear svg{width:20px;height:20px}
+.hp-main{flex:1 0 auto;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,3.4vh,30px);padding:8px 0 16px}
+.hp-logo{text-align:center}
+.hp-emb{width:clamp(40px,8vh,62px);height:clamp(40px,8vh,62px);margin:0 auto 6px;color:var(--ac);filter:drop-shadow(0 0 14px #ffb02e88)}.hp-emb svg{width:100%;height:100%}
+#menu .hp-logo h1{margin:0;font:900 italic clamp(40px,min(11vw,13vh),84px)/.92 "Arial Black","Segoe UI Black",Impact,system-ui,sans-serif;color:#fff;text-align:center;transform:skewX(-6deg);text-shadow:0 8px 30px #000b;background:none;filter:none}
+#menu .hp-logo h1 span{display:block;color:var(--ac);background:none;-webkit-text-fill-color:currentColor}
+.hp-stack{width:min(360px,100%);display:flex;flex-direction:column;gap:10px}
+#menu .hp input{width:100%;margin:0;padding:13px 15px;font:600 16px inherit;font-family:inherit;color:#fff;text-align:center;border-radius:12px;border:1px solid #ffffff26;background:#05080bb3}
+#menu .hp input::placeholder{color:#677885}
+.hp .h-play{margin:0;padding:15px 14px;border-radius:14px;animation:none}.hp .h-play::after{display:none}
+.hp .h-play .ct{font-size:clamp(20px,5vw,25px)}
+.hp-or{display:flex;align-items:center;gap:10px;margin:4px 0 0;font-size:10px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#6f8290}
+.hp-or::before,.hp-or::after{content:"";flex:1;height:1px;background:#ffffff1c}
+.hp .h-jn{display:flex;gap:8px;margin:0}
+#menu .hp .h-jn input{flex:1;min-width:0;font:800 18px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.3em;padding:12px 8px;text-transform:uppercase}
+.hp .h-jn .h-btn{width:92px;flex:none;margin:0;border-radius:12px}
+.hp-sub{display:flex;gap:8px;align-items:center}
+.hp-sub .h-cs{flex:1;min-width:0;margin:0;padding:6px 10px;font-size:10.5px;line-height:1.2}
+.hp-sub .h-mk{flex:none;width:auto;margin:0;padding:8px 12px;border-radius:999px;font-size:11px}.hp-sub .h-mk::after{display:none}.hp-sub .h-mk b{font-size:11px;letter-spacing:.1em}
+.hp-maps{display:flex;gap:8px}.hp-maps .h-map small{display:none}
+.hp-sub .h-cs span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hp-maps .h-map{flex-direction:row;width:auto;margin:0;padding:7px 14px;border-radius:999px;font-size:10.5px;font-weight:800;letter-spacing:.14em}
+.hp-maps .h-map.on::after{position:static;width:auto;height:auto;margin-left:6px;background:none;color:var(--ac);font-size:11px;line-height:1}
+/* short landscape (phones sideways): two columns */
+@media (max-height:520px) and (min-width:560px){
+ .hp-main{flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;column-gap:clamp(24px,6vw,70px);row-gap:8px;padding:0}
+ .hp-emb{display:none}#menu .hp-logo h1{font-size:clamp(34px,13vh,52px)}
+ .hp-stack{gap:8px;width:min(330px,46vw)}#menu .hp input{padding:9px 12px}.hp .h-play{padding:11px 12px}
+ .hp-maps{flex-basis:100%;justify-content:center}
+}
+@media (max-height:340px) and (min-width:560px){#menu .hp-logo h1{font-size:32px}.hp-sub{display:none}}
+@media (pointer:coarse){#menu .hp-gear{width:44px;height:44px}}
+/* ===== in-game: every overlay scales with the screen (--uis set from JS) ===== */
+#kf,#sb,#bc,#msg,#rc,#eqp,#swp .card,#swb:not(.lyx),#crb:not(.lyx),#crp:not(.lyx){zoom:var(--uis,1)}
+#pz{width:calc(36px*var(--uis,1));height:calc(36px*var(--uis,1));top:calc(10px*var(--uis,1));font-size:calc(13px*var(--uis,1))}
+@media (pointer:coarse){#kf{top:calc(82px*var(--uis,1))}}
+@media (max-height:480px){#sb{min-width:min(300px,86vw)}.bcard{padding-left:28px;padding-right:28px}}

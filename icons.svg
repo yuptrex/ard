@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="ic-play" viewBox="0 0 24 24">
+    <path d="M7 4.2v15.6a1 1 0 0 0 1.52.85l12.4-7.8a1 1 0 0 0 0-1.7l-12.4-7.8A1 1 0 0 0 7 4.2z" fill="currentColor"/>
+  </symbol>
+  <symbol id="ic-join" viewBox="0 0 24 24">
+    <path d="M12 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z" fill="currentColor"/>
+    <path d="M4 20.5c.9-3.6 4-5.8 8-5.8s7.1 2.2 8 5.8a1 1 0 0 1-1 1.3H5a1 1 0 0 1-1-1.3z" fill="currentColor" opacity=".85"/>
+  </symbol>
+  <symbol id="ic-host" viewBox="0 0 24 24">
+    <path d="M12 2 3 6.5v6c0 5.3 3.8 9.9 9 11 5.2-1.1 9-5.7 9-11v-6z" fill="currentColor" opacity=".18"/>
+    <path d="M12 2 3 6.5v6c0 5.3 3.8 9.9 9 11 5.2-1.1 9-5.7 9-11v-6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M12 7v10M7 12h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="ic-settings" viewBox="0 0 24 24">
+    <path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.4 7.4 0 0 0-1.7-1L15 3.4h-4l-.4 2.6c-.6.2-1.2.6-1.7 1l-2.4-1-2 3.4 2 1.6a7.6 7.6 0 0 0 0 2l-2 1.6 2 3.4 2.4-1c.5.4 1.1.8 1.7 1l.4 2.6h4l.4-2.6c.6-.2 1.2-.6 1.7-1l2.4 1 2-3.4zM13 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z" fill="currentColor"/>
+  </symbol>
+  <symbol id="ic-shield" viewBox="0 0 48 48">
+    <path d="M24 4 42 14v20L24 44 6 34V14z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M14 30 24 12l10 18h-6l-4-8-4 8z" fill="currentColor"/>
+  </symbol>
+  <symbol id="ic-map-arena" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    <circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".6"/>
+    <circle cx="12" cy="12" r="1.6" fill="currentColor"/>
+  </symbol>
+  <symbol id="ic-map-fortress" viewBox="0 0 24 24">
+    <path d="M4 10h2V7h3V5h2V3h2v2h2v2h3v3h2v10H4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    <path d="M9 20v-5h6v5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+  </symbol>
+  <symbol id="ic-swords" viewBox="0 0 24 24">
+    <path d="M3 21l6.5-6.5M21 3l-6.5 6.5M5 5l5.2 5.2M19 19l-5.2-5.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M3 3l2 2M21 21l-2-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="ic-pause" viewBox="0 0 24 24">
+    <rect x="6" y="4" width="4" height="16" rx="1.2" fill="currentColor"/>
+    <rect x="14" y="4" width="4" height="16" rx="1.2" fill="currentColor"/>
+  </symbol>
+  <symbol id="ic-resume" viewBox="0 0 24 24">
+    <path d="M7 4.2v15.6a1 1 0 0 0 1.52.85l12.4-7.8a1 1 0 0 0 0-1.7l-12.4-7.8A1 1 0 0 0 7 4.2z" fill="currentColor"/>
+  </symbol>
+  <symbol id="ic-home" viewBox="0 0 24 24">
+    <path d="M12 3 3 10.5V21h6v-6h6v6h6V10.5z" fill="currentColor"/>
+  </symbol>
+  <symbol id="ic-reset" viewBox="0 0 24 24">
+    <path d="M4 12a8 8 0 1 1 2.6 5.9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M4 17v-5h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </symbol>
+  <symbol id="ic-crate" viewBox="0 0 24 24">
+    <path d="M3 8 12 4l9 4-9 4-9-4z" fill="currentColor" opacity=".9"/>
+    <path d="M3 8v9l9 4V12z" fill="currentColor" opacity=".55"/>
+    <path d="M21 8v9l-9 4V12z" fill="currentColor" opacity=".75"/>
+  </symbol>
+  <symbol id="ic-medkit" viewBox="0 0 24 24">
+    <rect x="3" y="7" width="18" height="12" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    <path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    <path d="M12 10.5v6M9 13.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+  </symbol>
+</svg>

@@ -1,0 +1,17 @@
+# Deploy with:  fly launch --no-deploy --copy-config -c relay-fly.toml   then   fly deploy -c relay-fly.toml
+app = "csk-relay-CHANGE-ME"
+primary_region = "bom"          # Mumbai. Closest Fly region for India.
+[build]
+  dockerfile = "relay.Dockerfile"
+[env]
+  PORT = "8080"
+  # ALLOWED_ORIGINS = "https://your-game-site.web.app"
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"     # never sleep: a sleeping server = slow first connect
+  auto_start_machines = true
+  min_machines_running = 1
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

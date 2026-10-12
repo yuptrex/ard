@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <radialGradient id="skyGlow" cx="50%" cy="28%" r="75%">
+      <stop offset="0%" stop-color="#2a3d52"/>
+      <stop offset="45%" stop-color="#141f2b"/>
+      <stop offset="100%" stop-color="#070a0e"/>
+    </radialGradient>
+    <radialGradient id="emberGlow" cx="50%" cy="38%" r="40%">
+      <stop offset="0%" stop-color="#ffb02e" stop-opacity="0.55"/>
+      <stop offset="55%" stop-color="#ff7a1f" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#ff7a1f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="arenaFloor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0c141d"/>
+      <stop offset="100%" stop-color="#05080b"/>
+    </linearGradient>
+    <linearGradient id="pillarGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a3a4a"/>
+      <stop offset="100%" stop-color="#121c26"/>
+    </linearGradient>
+    <linearGradient id="knightGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a4b5c"/>
+      <stop offset="100%" stop-color="#17222d"/>
+    </linearGradient>
+    <filter id="softBlur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1000" fill="url(#skyGlow)"/>
+
+  <!-- distant particles / embers -->
+  <g class="hb-embers" fill="#ffb02e" opacity="0.5">
+    <circle cx="180" cy="160" r="2.2"/>
+    <circle cx="420" cy="90" r="1.6"/>
+    <circle cx="760" cy="140" r="2"/>
+    <circle cx="1040" cy="80" r="1.8"/>
+    <circle cx="1300" cy="180" r="2.4"/>
+    <circle cx="1480" cy="120" r="1.6"/>
+    <circle cx="90" cy="300" r="1.4"/>
+    <circle cx="1540" cy="300" r="1.8"/>
+  </g>
+
+  <!-- central ember glow behind the logo -->
+  <ellipse cx="800" cy="340" rx="620" ry="420" fill="url(#emberGlow)"/>
+
+  <!-- distant arena towers silhouette -->
+  <g fill="url(#pillarGrad)" opacity="0.8">
+    <path d="M60 760 L60 420 L100 370 L140 420 L140 760 Z"/>
+    <path d="M1460 760 L1460 420 L1500 370 L1540 420 L1540 760 Z"/>
+    <path d="M220 780 L220 520 L255 480 L290 520 L290 780 Z"/>
+    <path d="M1310 780 L1310 520 L1345 480 L1380 520 L1380 780 Z"/>
+  </g>
+
+  <!-- banners on the near towers -->
+  <g opacity="0.85">
+    <path d="M100 370 L100 440 L118 430 L136 440 L136 370 Z" fill="#ffb02e"/>
+    <path d="M1500 370 L1500 440 L1518 430 L1536 440 L1536 370 Z" fill="#ffb02e"/>
+  </g>
+
+  <!-- two facing knight silhouettes flanking the arena -->
+  <g transform="translate(150,560)" fill="url(#knightGrad)" opacity="0.92">
+    <path d="M70 420 C40 420 20 395 20 360 L20 260 C20 210 45 170 90 150 L90 110 C90 90 105 75 125 75 C145 75 160 90 160 110 L160 150 C205 170 230 210 230 260 L230 360 C230 395 210 420 180 420 Z"/>
+    <path d="M125 40 L150 80 L100 80 Z" fill="#ffb02e" opacity="0.9"/>
+    <rect x="0" y="230" width="22" height="110" rx="8"/>
+    <rect x="228" y="230" width="22" height="110" rx="8"/>
+  </g>
+  <g transform="translate(1180,560) scale(-1,1) translate(-250,0)" fill="url(#knightGrad)" opacity="0.92">
+    <path d="M70 420 C40 420 20 395 20 360 L20 260 C20 210 45 170 90 150 L90 110 C90 90 105 75 125 75 C145 75 160 90 160 110 L160 150 C205 170 230 210 230 260 L230 360 C230 395 210 420 180 420 Z"/>
+    <path d="M125 40 L150 80 L100 80 Z" fill="#ffb02e" opacity="0.9"/>
+    <rect x="0" y="230" width="22" height="110" rx="8"/>
+    <rect x="228" y="230" width="22" height="110" rx="8"/>
+  </g>
+
+  <!-- ground / arena floor with radial lines -->
+  <rect x="0" y="760" width="1600" height="240" fill="url(#arenaFloor)"/>
+  <g stroke="#ffffff10" stroke-width="2" fill="none">
+    <ellipse cx="800" cy="770" rx="760" ry="60"/>
+    <ellipse cx="800" cy="770" rx="560" ry="44"/>
+    <ellipse cx="800" cy="770" rx="360" ry="28"/>
+  </g>
+
+  <!-- floating dust / glow accents -->
+  <circle cx="800" cy="200" r="260" fill="url(#emberGlow)" filter="url(#softBlur)" opacity="0.5" class="hb-pulse"/>
+</svg>

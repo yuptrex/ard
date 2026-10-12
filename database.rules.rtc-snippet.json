@@ -1,0 +1,9 @@
+{
+  "rules": {
+    "rooms": {
+      "$code": {
+        "rtc": { ".read": true, ".write": true }
+      }
+    }
+  }
+}

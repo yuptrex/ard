@@ -1,0 +1,144 @@
+/* ===========================================================
+   Home screen = one full-screen artwork (assets/home-bg.jpg, 1983x793)
+   with invisible-but-real buttons laid exactly over the painted ones.
+   Every position below is stored in artwork pixels (--x --y --w --h)
+   and converted to % of the stage, so the buttons stay glued to the
+   art at any screen size. The art is stretched to fill the screen:
+   nothing is cropped and there are no gaps.
+   Loaded last so it wins over the older home rules.
+   =========================================================== */
+#menu{display:block;position:fixed;inset:0;padding:0;overflow:hidden;background:#05080b;touch-action:manipulation}
+#menu::before,#menu::after{content:none!important;animation:none!important}
+
+.hs{position:absolute;inset:0;container-type:size;overflow:hidden;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.hs-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;pointer-events:none;-webkit-user-drag:none}
+.hs-ui{position:absolute;inset:0}
+#acc{position:absolute;inset:0;pointer-events:none}
+#acc>*{pointer-events:auto}
+
+/* shared geometry: artwork px -> stage % */
+#menu .hs .hs-btn,#menu .hs .hs-hit,#menu .hs .hs-name,#menu .hs .hs-room,#menu .hs .hs-cs{
+  position:absolute;
+  left:calc(var(--x) / 1983 * 100%);top:calc(var(--y) / 793 * 100%);
+  width:calc(var(--w) / 1983 * 100%);height:calc(var(--h) / 793 * 100%);
+  margin:0;box-sizing:border-box}
+/* text sized from the artwork so it never overflows its box */
+.hs{--u:min(100cqw / 1983, 100cqh / 793)}
+
+/* ---------- buttons ---------- */
+.hs-btn{padding:0;border:0;background:none;border-radius:0;color:transparent;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;outline:0;
+  --bgw:calc(1983 / var(--w) * 100%);--bgh:calc(793 / var(--h) * 100%);
+  --bgx:calc(var(--x) / (1983 - var(--w)) * 100%);--bgy:calc(var(--y) / (793 - var(--h)) * 100%)}
+.hs-dim{--pf:brightness(.8) saturate(1.15)}
+.hs-lit{--pf:brightness(1.5) saturate(1.25)}
+
+/* .face = a copy of the painted button; invisible at rest, shown to "press" */
+.hs-btn .face{position:absolute;inset:0;display:block;pointer-events:none;
+  background:url("home-bg.jpg") no-repeat;
+  background-size:var(--bgw) var(--bgh);background-position:var(--bgx) var(--bgy);
+  clip-path:var(--clip);-webkit-clip-path:var(--clip);
+  opacity:0;transform:none;transform-origin:50% 50%;
+  transition:transform .12s cubic-bezier(.2,.8,.2,1),filter .12s,opacity .08s}
+.hs-btn .fx{position:absolute;inset:0;display:block;overflow:hidden;pointer-events:none;
+  clip-path:var(--clip);-webkit-clip-path:var(--clip)}
+
+@media (hover:hover){
+  .hs-btn:not(:disabled):hover .face{opacity:1;filter:brightness(1.1) saturate(1.1)}
+}
+.hs-btn.is-down .face,.hs-btn:not(:disabled):active .face{
+  opacity:1;filter:var(--pf);transform:translateY(3%) scale(.965);transition-duration:.06s}
+.hs-btn:disabled{cursor:progress}
+.hs-btn:disabled .face{opacity:1;filter:grayscale(.75) brightness(.6)}
+.hs-btn:focus-visible{outline:2px solid #ffd067;outline-offset:3px}
+
+/* tap ripple (created by js/home-fx.js) */
+.hs-rip{position:absolute;width:30%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(0);
+  background:radial-gradient(circle,#fffffff2 0,#ffffff80 38%,#ffffff00 70%);mix-blend-mode:screen;
+  animation:hsRip .55s cubic-bezier(.2,.7,.2,1) forwards}
+.hs-lit .hs-rip{background:radial-gradient(circle,#bfeaffff 0,#5cc8ff99 38%,#5cc8ff00 70%)}
+@keyframes hsRip{to{transform:translate(-50%,-50%) scale(5.5);opacity:0}}
+
+/* ---------- sign-in label (only visible once signed in / busy) ---------- */
+.hs-so{position:absolute;display:none;align-items:center;justify-content:center;pointer-events:none;isolation:isolate;
+  background:linear-gradient(180deg,#f0f3f9,#d7e0f1);
+  color:#141b2e;font:700 calc(23 * var(--u)) var(--csk-font-display,"Rajdhani",system-ui,sans-serif);
+  letter-spacing:.1em;white-space:nowrap;z-index:1}
+.hs-so::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,#f8f9fb,#f1f1fa);
+  -webkit-mask-image:linear-gradient(90deg,transparent 5%,#000 85%);mask-image:linear-gradient(90deg,transparent 5%,#000 85%)}
+#acc[data-s="in"] .hs-so,#acc[data-s="busy"] .hs-so{display:flex}
+.hs-btn:disabled .hs-so{opacity:.6}
+
+/* ---------- callsign (sits on the account chip) ---------- */
+#menu .hs .hs-name{padding:0 2%;border:0;border-radius:0;background:#010d1c;color:#fff;text-align:center;
+  font:700 calc(24 * var(--u)) var(--csk-font-display,"Rajdhani",system-ui,sans-serif);letter-spacing:.02em;
+  text-overflow:ellipsis;outline:0;box-shadow:none;text-shadow:0 1px 0 #0008;transition:box-shadow .15s}
+#menu .hs .hs-name::placeholder{color:#76849a;font-weight:600;font-size:calc(21 * var(--u))}
+#menu .hs .hs-name:focus{box-shadow:inset 0 calc(-2.5 * var(--u)) 0 #ffb02e}
+#menu .hs .hs-name[readonly]{cursor:default;box-shadow:none}
+
+/* ---------- room code ---------- */
+.hs-hit{display:block;cursor:text;-webkit-tap-highlight-color:transparent}
+#menu .hs .hs-room{padding:0 1.5%;border:0;border-radius:0;background:#030c1b;color:#fff;
+  font:800 calc(25 * var(--u)) ui-monospace,Menlo,Consolas,monospace;letter-spacing:.22em;text-transform:uppercase;
+  text-align:left;outline:0;box-shadow:none;transition:box-shadow .15s}
+#menu .hs .hs-room::placeholder{color:#8993a6;font:600 calc(19 * var(--u)) var(--csk-font-display,"Rajdhani",system-ui,sans-serif);letter-spacing:.02em;text-transform:none}
+#menu .hs .hs-room:focus{box-shadow:inset 0 calc(-2.5 * var(--u)) 0 #38c6ff}
+
+/* ---------- connection pill: only appears if the servers can't be reached ---------- */
+.hs-cs{display:none;align-items:center;justify-content:center;gap:calc(10 * var(--u));padding:0 2%;cursor:pointer;
+  border:1px solid #ff5a4a88;border-radius:999px;background:#0a0f18e6;color:#ffb4ab;
+  font:700 calc(20 * var(--u)) var(--csk-font-body,Inter,system-ui,sans-serif);-webkit-tap-highlight-color:transparent}
+.hs-cs[data-s="bad"]{display:flex}
+.hs-cs i{flex:none;width:calc(12 * var(--u));height:calc(12 * var(--u));border-radius:50%;background:#ff5a4a}
+.hs-cs span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hs-cs:active{transform:scale(.98)}
+
+/* the artwork is landscape-only: on a phone held upright ask for a rotation */
+@media (orientation:portrait) and (pointer:coarse){
+  body:has(#menu:not([style*="none"])) #rot{display:flex}
+}
+@media (prefers-reduced-motion:reduce){.hs-rip{animation-duration:.01s}.hs-btn .face{transition:none}}
+
+/* ---------- full-screen button (top, left of the profile plate) ---------- */
+#menu .hs .hs-fs{
+  /* The home art is stretched to the screen, so size from the smaller of the
+     stretched width/height to keep this button a true square at any aspect.
+     Anchored by its right edge (--rx) and vertical centre (--cy), art pixels. */
+  --side:min(calc(var(--w) / 1983 * 100cqw), calc(var(--h) / 793 * 100cqh));
+  position:absolute;
+  width:var(--side);height:var(--side);
+  right:calc((1983 - var(--rx)) / 1983 * 100%);
+  top:calc(var(--cy) / 793 * 100%);margin:calc(var(--side) / -2) 0 0 0;
+  padding:0;border:0;border-radius:0;background:none;box-sizing:border-box;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:#ffc24a;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;outline:0;
+  --oct:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);
+  filter:drop-shadow(0 calc(3 * var(--u)) calc(7 * var(--u)) #000b);
+  transition:transform .14s cubic-bezier(.2,.8,.2,1),filter .18s;
+}
+/* gold frame */
+#menu .hs .hs-fs::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(155deg,#fff0b8 0%,#ffc24a 38%,#e08a12 70%,#8a4a00 100%);
+  clip-path:var(--oct);-webkit-clip-path:var(--oct)}
+/* dark plate inside the frame */
+#menu .hs .hs-fs::after{content:"";position:absolute;inset:calc(5 * var(--u));
+  background:radial-gradient(circle at 50% 28%,#22385a 0%,#0e1829 62%,#070c15 100%);
+  clip-path:var(--oct);-webkit-clip-path:var(--oct)}
+#menu .hs .hs-fs .fs-ic{
+  position:relative;z-index:1;width:56%;height:56%;
+  fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 0 calc(4 * var(--u)) #ffb02eaa);
+  transition:transform .18s cubic-bezier(.2,.8,.2,1)}
+#menu .hs .hs-fs .fs-co{display:none}
+#menu .hs .hs-fs.on .fs-ex{display:none}
+#menu .hs .hs-fs.on .fs-co{display:block}
+@media (hover:hover){
+  #menu .hs .hs-fs:hover{transform:scale(1.07);filter:drop-shadow(0 calc(3 * var(--u)) calc(7 * var(--u)) #000b) brightness(1.15)}
+  #menu .hs .hs-fs:hover .fs-ex{transform:scale(1.14)}
+  #menu .hs .hs-fs:hover .fs-co{transform:scale(.88)}
+}
+#menu .hs .hs-fs:active{transform:translateY(calc(2 * var(--u))) scale(.94);transition-duration:.06s}
+#menu .hs .hs-fs:focus-visible{outline:2px solid #ffd067;outline-offset:3px}
+#menu .hs .hs-fs[hidden]{display:none}

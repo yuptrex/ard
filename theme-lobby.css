@@ -1,0 +1,227 @@
+/* ===========================================================
+   Waiting room + loading screen = full-screen artwork (1983x793)
+   with real, live elements laid exactly over the painted ones.
+   Same method as the home screen: every position is stored in
+   artwork pixels (--x --y --w --h) and converted to % of the
+   stage, so it stays glued to the art at any screen size. The art
+   is stretched to fill the screen: nothing cropped, no gaps.
+
+   lobby-bg.jpg   = waiting-room art with the placeholder text
+                    ("Player 01", "20 PLAYERS...", "START") painted out
+   loading-bg.jpg = loading art with the "72%" bar fill painted out
+   =========================================================== */
+
+/* ---------------------------------------------------------- waiting room */
+#lob{position:fixed;inset:0;z-index:40;background:#05080b;overflow:hidden;
+  font-family:var(--csk-font-display);user-select:none;-webkit-user-select:none;
+  -webkit-touch-callout:none;touch-action:manipulation}
+#lob[hidden]{display:none}
+#lob *{box-sizing:border-box}
+.lob-stage{position:absolute;inset:0;container-type:size}
+.lob-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;pointer-events:none;-webkit-user-drag:none}
+.lob-ui{position:absolute;inset:0;--u:min(100cqw / 1983, 100cqh / 793)}
+
+/* shared geometry: artwork px -> stage % */
+.lob-abs{position:absolute;margin:0;
+  left:calc(var(--x) / 1983 * 100%);top:calc(var(--y) / 793 * 100%);
+  width:calc(var(--w) / 1983 * 100%);height:calc(var(--h) / 793 * 100%)}
+
+/* status strip (replaces the painted "20 PLAYERS - GAME WILL START SOON") */
+.lob-sub{display:flex;align-items:center;justify-content:center;gap:calc(var(--u) * 12);white-space:nowrap;
+  font-weight:700;letter-spacing:.09em;font-size:calc(var(--u) * 15);line-height:1;color:#bcd8ff;
+  text-shadow:0 0 calc(var(--u) * 10) #2a6cff88,0 1px 0 #000a;pointer-events:none}
+.lob-sub .d{font-style:normal;color:var(--csk-amber);font-size:.7em}
+.lob-code{pointer-events:auto;cursor:pointer;background:none;border:0;padding:0;margin:0;font:inherit;letter-spacing:inherit;color:inherit;
+  text-shadow:inherit;-webkit-tap-highlight-color:transparent}
+.lob-code b{color:var(--csk-amber-soft);margin-left:.35em}
+.lob-code:active{transform:scale(.96)}
+
+/* buttons: a .face is a copy of the painted region, so press / disabled states can restyle it */
+.lob-btn{padding:0;border:0;background:none;color:transparent;cursor:pointer;outline:0;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  --bgw:calc(1983 / var(--w) * 100%);--bgh:calc(793 / var(--h) * 100%);
+  --bgx:calc(var(--x) / (1983 - var(--w)) * 100%);--bgy:calc(var(--y) / (793 - var(--h)) * 100%)}
+.lob-btn .face{position:absolute;inset:0;display:block;pointer-events:none;
+  background:url("lobby-bg.jpg") no-repeat;background-size:var(--bgw) var(--bgh);background-position:var(--bgx) var(--bgy);
+  clip-path:var(--clip);-webkit-clip-path:var(--clip);opacity:0;
+  transition:transform .12s cubic-bezier(.2,.8,.2,1),filter .12s,opacity .08s}
+@media (hover:hover){.lob-btn:not(:disabled):hover .face{opacity:1;filter:brightness(1.12) saturate(1.1)}}
+.lob-btn:not(:disabled):active .face{opacity:1;filter:brightness(.85) saturate(1.15);transform:translateY(3%) scale(.965);transition-duration:.06s}
+.lob-btn:focus-visible{outline:2px solid #ffd067;outline-offset:3px}
+
+.lob-leave{--clip:polygon(4% 10%,96% 10%,100% 50%,96% 90%,4% 90%,0 50%)}
+
+/* START (host) / READY (everyone else) share the big gold button */
+.lob-go{--clip:polygon(6% 10%,94% 10%,99% 50%,94% 90%,6% 90%,1% 50%)}
+.lob-go[hidden]{display:none}
+.lob-go .face{opacity:1}
+.lob-go .lab{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:calc(var(--u) * 16);
+  color:#3b2400;font-weight:700;letter-spacing:.14em;font-size:calc(var(--u) * 44);line-height:1;
+  text-shadow:0 1px 0 #ffe9a866;pointer-events:none;transition:transform .06s}
+.lob-go .lab svg{width:calc(var(--u) * 46);height:calc(var(--u) * 46);fill:#3b2400;flex:0 0 auto}
+.lob-go:not(:disabled):active .lab{transform:translateY(3%) scale(.97)}
+.lob-go:disabled{cursor:not-allowed}
+.lob-go:disabled .face{filter:grayscale(.85) brightness(.55)}
+.lob-go:disabled .lab{opacity:.55}
+.lob-go.on .face{filter:hue-rotate(78deg) saturate(1.05)}   /* ready = green */
+.lob-go.on:not(:disabled):hover .face{filter:hue-rotate(78deg) saturate(1.05) brightness(1.1)}
+
+/* ---------- 20 seats laid over the 5 x 4 painted frames ---------- */
+.lob-seats{position:absolute;inset:0;pointer-events:none}
+.lob-seat{position:absolute;pointer-events:auto;-webkit-tap-highlight-color:transparent;
+  left:calc(var(--x) / 1983 * 100%);top:calc(var(--y) / 793 * 100%);
+  width:calc(var(--w) / 1983 * 100%);height:calc(var(--h) / 793 * 100%)}
+.lob-open{cursor:pointer}
+.lob-seat>*{position:absolute}
+/* avatar sits inside the painted ring and covers the placeholder silhouette */
+.lob-av{left:31.2%;top:3.7%;width:42.3%;height:66%;border-radius:50%;overflow:hidden;
+  background:radial-gradient(circle at 50% 35%,#27466f,#0b1626);display:flex;align-items:center;justify-content:center;
+  border:calc(var(--u) * 3) solid #c9d3df;box-shadow:0 0 0 1px #0008,0 0 calc(var(--u) * 10) #000a}
+.lob-av img{width:100%;height:100%;object-fit:cover;display:block}
+.lob-ini{font-style:normal;font-weight:700;font-size:calc(var(--u) * 44);color:var(--csk-amber-soft);line-height:1}
+/* name plate: text lives inside the painted blue pill */
+.lob-pill{left:10.8%;top:71.6%;width:80.9%;height:23.9%;display:flex;align-items:center;justify-content:center;
+  padding:0 6%;font-weight:700;font-size:calc(var(--u) * 15);letter-spacing:.03em;color:#fff;line-height:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px #000}
+.lob-pill small{font-weight:600;color:#9fb8d8;margin-left:.4em;font-size:.8em}
+.lob-open .lob-pill{color:#6f8db8;letter-spacing:.1em}
+@media (hover:hover){.lob-open:hover .lob-pill{color:#cfe3ff}
+  .lob-open:hover .lob-glow{opacity:1}}
+.lob-glow{inset:2px;opacity:0;pointer-events:none;border-radius:6px;transition:opacity .15s;
+  box-shadow:0 0 calc(var(--u) * 16) #ffb02e99,inset 0 0 calc(var(--u) * 14) #ffb02e44;border:1px solid #ffd067aa}
+.lob-me .lob-glow{opacity:1;border:2px solid #ffd067}
+.lob-rdy .lob-pill{color:var(--csk-amber-soft)}
+.lob-ck{left:63%;top:48%;width:calc(var(--u) * 24);height:calc(var(--u) * 24);border-radius:50%;
+  background:#22c55e;border:2px solid #eaffef;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 calc(var(--u) * 10) #22c55eaa}
+.lob-ck svg{width:62%;height:62%;stroke:#fff;fill:none;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+.lob-host-tag{right:2%;top:4%;font-weight:700;font-size:calc(var(--u) * 9.5);letter-spacing:.1em;color:#2a0a05;
+  background:linear-gradient(180deg,#ff6a52,#e8392a);border:1px solid #ff8a73;border-radius:999px;padding:.22em .8em;
+  box-shadow:0 2px 8px -2px #ff3a2a99;line-height:1.2}
+/* locked seats (only 8 are playable) */
+.lob-veil{inset:3px;background:#030710a8;
+  clip-path:polygon(0 9%,5% 0,95% 0,100% 9%,100% 91%,95% 100%,5% 100%,0 91%);
+  display:flex;align-items:center;justify-content:center}
+.lob-veil svg{width:calc(var(--u) * 30);height:calc(var(--u) * 30);margin-top:-14%;fill:none;stroke:#7d8da3;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.lob-locked .lob-pill{color:#66768c;letter-spacing:.12em}
+
+/* ---------- countdown ---------- */
+.lob-count{position:fixed;inset:0;z-index:41;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  background:#04080cdd;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:16px}
+.lob-count[hidden]{display:none}
+.lob-count-n{font-family:var(--csk-font-display);font-weight:700;font-size:min(22vw,34vh,160px);line-height:1;
+  background:linear-gradient(180deg,var(--csk-amber-soft),var(--csk-amber));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 10px 30px #ff8a1f55)}
+.lob-count-l{font-family:var(--csk-font-display);font-weight:700;letter-spacing:.2em;font-size:clamp(11px,2.6vh,16px);color:#bcd8ff;text-align:center}
+
+/* ---------- dimmed Create Room button when logged out ---------- */
+#host.lob-locked-btn{opacity:.5;filter:grayscale(.4)}
+
+/* ---------------------------------------------------------- loading screen */
+#csk-splash{position:fixed;inset:0;z-index:999;display:block;background:#05080b;overflow:hidden;
+  container-type:size;transition:opacity .5s ease,visibility .5s}
+#csk-splash::before{content:none}
+#csk-splash.csk-hide{opacity:0;visibility:hidden;pointer-events:none}
+#csk-splash .sp-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;pointer-events:none;-webkit-user-drag:none}
+#csk-splash .sp-ui{position:absolute;inset:0;--u:min(100cqw / 1983, 100cqh / 793)}
+/* real progress bar laid exactly inside the painted frame (artwork px 690,565 596x29) */
+#csk-splash .sp-track{position:absolute;overflow:hidden;
+  left:calc(690 / 1983 * 100%);top:calc(565 / 793 * 100%);width:calc(596 / 1983 * 100%);height:calc(29 / 793 * 100%)}
+#csk-splash .sp-fill{position:absolute;left:0;top:0;bottom:0;width:0;
+  background:linear-gradient(180deg,#fff08a 0,#ffd21f 22%,#ffb000 55%,#ff8a00 100%);
+  clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%);
+  box-shadow:inset 0 1px 0 #fff8c8}
+#csk-splash .sp-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--csk-font-display);font-weight:700;letter-spacing:.06em;color:#fff;line-height:1;
+  font-size:calc(var(--u) * 26);-webkit-text-stroke:calc(var(--u) * 3) #3a2200;paint-order:stroke fill;
+  text-shadow:0 1px 3px #000a}
+
+/* ---------------------------------------------------------- live tip (the painted tip was removed from loading-bg.jpg) */
+/* sits where the painted tip used to be (artwork px: x 560-1423, y 681-705) */
+.sp-tip{position:absolute;left:calc(560 / 1983 * 100%);width:calc(863 / 1983 * 100%);top:calc(681 / 793 * 100%);height:calc(24 / 793 * 100%);
+  display:flex;align-items:center;justify-content:center;text-align:center;white-space:nowrap;overflow:hidden;
+  font-family:var(--csk-font-body,Inter,system-ui,sans-serif);font-weight:500;letter-spacing:.01em;color:#fff;
+  font-size:calc(var(--u) * 17.5);line-height:1;text-shadow:0 1px 3px #000,0 0 calc(var(--u) * 8) #000;
+  transition:opacity .24s ease;pointer-events:none}
+
+/* ---------------------------------------------------------- reusable loader (every screen switch) */
+#csk-load{position:fixed;inset:0;z-index:990;display:block;background:#05080b;overflow:hidden;container-type:size;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s}
+#csk-load.on{opacity:1;visibility:visible;pointer-events:auto}   /* while up it also swallows taps, so nothing double-fires */
+#csk-load[hidden]{display:none}
+#csk-load .sp-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;pointer-events:none;-webkit-user-drag:none}
+#csk-load .sp-ui{position:absolute;inset:0;--u:min(100cqw / 1983, 100cqh / 793)}
+#csk-load .sp-track{position:absolute;overflow:hidden;
+  left:calc(690 / 1983 * 100%);top:calc(565 / 793 * 100%);width:calc(596 / 1983 * 100%);height:calc(29 / 793 * 100%)}
+#csk-load .sp-fill{position:absolute;left:0;top:0;bottom:0;width:0;
+  background:linear-gradient(180deg,#fff08a 0,#ffd21f 22%,#ffb000 55%,#ff8a00 100%);
+  clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%);box-shadow:inset 0 1px 0 #fff8c8}
+#csk-load .sp-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--csk-font-display);font-weight:700;letter-spacing:.06em;color:#fff;line-height:1;
+  font-size:calc(var(--u) * 26);-webkit-text-stroke:calc(var(--u) * 3) #3a2200;paint-order:stroke fill;text-shadow:0 1px 3px #000a}
+/* the splash needs --u for the tip font size too (it already defines it on .sp-ui) */
+
+/* ---------------------------------------------------------- host: tap a player -> small popup with KICK OUT */
+.lob-pick{cursor:pointer}
+@media (hover:hover){.lob-pick:hover .lob-glow{opacity:1}}
+.lob-pop{z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u) * 7);
+  padding:calc(var(--u) * 8);border-radius:calc(var(--u) * 10);
+  background:linear-gradient(180deg,#101c33f2,#070d1af2);border:1px solid #ffd067aa;
+  box-shadow:0 10px 28px -6px #000,0 0 calc(var(--u) * 16) #2a6cff55;
+  animation:lobPop .16s cubic-bezier(.2,.9,.3,1.2) both;transform-origin:50% 0}
+.lob-pop[hidden]{display:none}
+.lob-pop::before{content:"";position:absolute;left:50%;top:calc(var(--u) * -6);width:calc(var(--u) * 10);height:calc(var(--u) * 10);
+  margin-left:calc(var(--u) * -5);transform:rotate(45deg);background:#101c33;border-left:1px solid #ffd067aa;border-top:1px solid #ffd067aa}
+.lob-pop b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;font-weight:700;letter-spacing:.04em;
+  font-size:calc(var(--u) * 15);line-height:1}
+.lob-pop button{width:100%;margin:0;padding:0;height:calc(var(--u) * 30);cursor:pointer;border:1px solid #ff9a8a;border-radius:calc(var(--u) * 7);
+  font-family:var(--csk-font-display);font-weight:700;letter-spacing:.12em;font-size:calc(var(--u) * 14);color:#fff;
+  background:linear-gradient(180deg,#ff6a52,#d8321f);box-shadow:0 0 calc(var(--u) * 10) #ff3a2a77;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.lob-pop button:hover{filter:brightness(1.12)}
+.lob-pop button:active{transform:scale(.96)}
+.lob-pop button:focus-visible{outline:2px solid #ffd067;outline-offset:2px}
+@keyframes lobPop{from{opacity:0;transform:translateY(-6px) scale(.92)}to{opacity:1;transform:none}}
+
+/* countdown: full-screen hint when the browser is still windowed (the countdown itself can't request it, a tap can) */
+.lob-count-fs{margin-top:6px;padding:.5em 1.1em;border:1px solid #ffd06788;border-radius:999px;color:#ffe6a8;background:#0007;
+  font-family:var(--csk-font-display);font-weight:700;letter-spacing:.12em;font-size:clamp(11px,2.4vh,15px);animation:fsPulse 1.6s ease-in-out infinite}
+.lob-count-fs[hidden]{display:none}
+@keyframes fsPulse{50%{box-shadow:0 0 18px #ffb02e88}}
+.lob-count{cursor:pointer}
+
+/* ---------------------------------------------------------- waiting-room scenery (PC): knights, fog, embers */
+.lob-fx{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.lob-fx>*{position:absolute}
+.fx-fog{left:-20%;width:140%;bottom:-6%;height:34%;filter:blur(26px);opacity:.55;
+  background:radial-gradient(ellipse at 30% 60%,#5b8cff55,transparent 60%),radial-gradient(ellipse at 70% 70%,#ff8a3d44,transparent 62%);
+  animation:fxDrift 26s ease-in-out infinite alternate}
+.fx-fog.f2{bottom:-10%;height:28%;opacity:.45;animation-duration:34s;animation-direction:alternate-reverse}
+@keyframes fxDrift{from{transform:translateX(-6%)}to{transform:translateX(6%)}}
+/* a knight = lane (travels) > face (flips for right-to-left) > svg (bobs, legs swing) */
+.fx-k{left:0;bottom:calc(var(--b) + 2.5%);height:20cqh;aspect-ratio:64 / 112;will-change:transform;
+  animation:fxMarch var(--d) linear infinite;animation-delay:var(--dl)}
+.fx-k.rev{animation-direction:reverse}
+@keyframes fxMarch{from{transform:translateX(-14cqw)}to{transform:translateX(112cqw)}}
+.fx-face{position:absolute;inset:0}
+.fx-k.rev .fx-face{transform:scaleX(-1)}
+.fx-k svg{width:100%;height:100%;overflow:visible;animation:fxBob .56s ease-in-out infinite}
+.fx-k .k-leg{transform-box:fill-box;transform-origin:50% 0;animation:fxLeg .56s ease-in-out infinite alternate}
+.fx-k .kr{animation-direction:alternate-reverse}
+.fx-k .k-sword{transform-box:fill-box;transform-origin:50% 100%;animation:fxSword 1.12s ease-in-out infinite}
+@keyframes fxBob{50%{transform:translateY(-3.5%)}}
+@keyframes fxLeg{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}
+@keyframes fxSword{50%{transform:rotate(-14deg)}}
+.fx-shadow{left:8%;right:-6%;bottom:-3%;height:8%;border-radius:50%;background:#000;filter:blur(5px);opacity:.55}
+/* depth: far = small, dim, very blurry; mid = softly blurred; near = sharp, big, coloured glow */
+.fx-k.far{height:15cqh;opacity:.8;filter:blur(3.4px) brightness(.8) saturate(1)}
+.fx-k.mid{height:21cqh;filter:blur(1.6px) brightness(1)}
+.fx-k.near{height:29cqh;filter:brightness(1.12) drop-shadow(0 0 12px #ffffff33) drop-shadow(0 6px 10px #000c)}
+.fx-ember{bottom:-2%;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;background:#ffc15a;
+  box-shadow:0 0 8px 2px #ff9a2e;filter:blur(.8px);opacity:0;animation:fxEmber var(--t) linear infinite;animation-delay:var(--dl)}
+@keyframes fxEmber{0%{opacity:0;transform:translate(0,0)}12%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),-62cqh)}}
+/* soft vignette + blur toward the very bottom so the scene melts into the art */
+.fx-haze{left:0;right:0;bottom:0;height:30%;background:linear-gradient(180deg,transparent,#04070dcc);
+  -webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px);
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 70%);mask-image:linear-gradient(180deg,transparent,#000 70%)}
+@media (prefers-reduced-motion:reduce){.lob-fx{display:none}}
