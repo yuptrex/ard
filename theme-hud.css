@@ -174,8 +174,7 @@
 @keyframes csk-splash-bar{
   0%{transform:translateX(-120%)}
   100%{transform:translateX(360%)}
-}
-@media (prefers-reduced-motion:reduce){
+}@media (prefers-reduced-motion:reduce){
   #csk-splash .csk-splash-mark{animation:none}
   #csk-splash .csk-splash-bar i{animation:none;width:100%}
 }

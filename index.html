@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<script src="lock.js"></script><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>CSuperKnights (CSK) — Multiplayer Arena Shooter</title>
 <meta name="description" content="CSuperKnights (CSK, also CsKnights): fast top-down arena shooter. Play solo against bots or host a room. First to 15 kills wins.">
 <meta name="theme-color" content="#0d1217"><meta name="color-scheme" content="dark">
@@ -19,35 +19,38 @@
 <link rel="stylesheet" href="theme-vars.css">
 <link rel="stylesheet" href="theme-home.css">
 <link rel="stylesheet" href="theme-hud.css">
-<link rel="stylesheet" href="home-image.css">
+<link rel="stylesheet" href="home-new.css">
 <link rel="stylesheet" href="theme-lobby.css">
-<link rel="stylesheet" href="theme-radar.css">
-<link rel="preload" as="image" href="loading-bg.jpg" fetchpriority="high">
-<link rel="preload" as="image" href="home-bg.jpg">
-<link rel="prefetch" as="image" href="lobby-bg.jpg">
+<link rel="stylesheet" href="loading.css">
+<link rel="stylesheet" href="login.css"><link rel="stylesheet" href="settings.css">
+<script src="loading.js"></script>   <!-- picks + preloads the random splash art -->
+<link rel="prefetch" as="image" href="login-bg.jpg">
 </head><body>
 <!-- Loading splash: covers first paint while fonts/Firebase/game script initialize.
      Pure presentation — does not touch any game state or element the game script uses. -->
 <div id="csk-splash" aria-hidden="true">
-  <img class="sp-bg" src="loading-bg.jpg" alt="" draggable="false" decoding="sync" fetchpriority="high">
-  <div class="sp-ui">
-    <div class="sp-track"><div class="sp-fill" id="sp-fill"></div><div class="sp-pct" id="sp-pct">0%</div></div>
+  <div class="sp-stage">
+    <img class="sp-bg" id="sp-bg" alt="" draggable="false" decoding="sync" fetchpriority="high">
+    <div class="sp-bar"><div class="sp-fill" id="sp-fill"></div><span class="sp-pct" id="sp-pct">0%</span></div>
     <div class="sp-tip" id="sp-tip"></div>
   </div>
 </div>
-<!-- Same loading art, reused for every screen switch (home -> waiting room -> match, leaving, kicked, solo) -->
+<script>CSKLoadArt.set(document.getElementById('sp-bg'),CSKLoadArt.first)</script><script src="blink.js"></script>
+<!-- Same loading screen, reused for every screen switch (home -> waiting room -> match, leaving, kicked, solo). Picks a new random scene each time. -->
 <div id="csk-load" hidden aria-hidden="true">
-  <img class="sp-bg" src="loading-bg.jpg" alt="" draggable="false" decoding="sync">
-  <div class="sp-ui">
-    <div class="sp-track"><div class="sp-fill" id="ld-fill"></div><div class="sp-pct" id="ld-pct">0%</div></div>
+  <div class="sp-stage">
+    <img class="sp-bg" id="ld-bg" alt="" draggable="false">
+    <div class="sp-bar"><div class="sp-fill" id="ld-fill"></div><span class="sp-pct" id="ld-pct">0%</span></div>
     <div class="sp-tip" id="ld-tip"></div>
   </div>
 </div>
-<script src="loading.js"></script>
+<script src="asset-cache.js"></script>
+<script src="boot-gate.js"></script>   <!-- signed out = light page; everything heavy loads after login -->
 <script>
 /* Loading screen progress: real checkpoints are reported by __cskProg(n) between the big script loads below;
-   in between, the bar creeps forward so it never looks frozen. It reaches 100% on window "load", then fades out.
-   It can never block play: a hard safety timeout closes it even if "load" never fires. */
+   in between, the bar creeps forward so it never looks frozen. It reaches 100% once window "load" fires
+   AND the local asset cache finishes, then fades out. It can never block play: a hard safety timeout
+   closes it even if those never fire. */
 (function(){
   var t0=Date.now(),MIN_MS=900,target=0,shown=0,closing=0,fill=document.getElementById('sp-fill'),pct=document.getElementById('sp-pct'),el=document.getElementById('csk-splash');
   function paint(){var p=Math.round(shown);fill.style.width=shown+'%';pct.textContent=p+'%'}
@@ -61,9 +64,12 @@
     if(closing&&shown>=99.6&&age>=MIN_MS){clearInterval(iv);shown=100;paint();setTimeout(function(){el.classList.add('csk-hide');if(stopTips)setTimeout(stopTips,600)},260)}
   },33);
   var stopTips=window.CSKTips?CSKTips.attach(document.getElementById('sp-tip')):null;
-  function finish(){closing=1}
-  if(document.readyState==='complete')finish();else window.addEventListener('load',finish);
-  setTimeout(finish,7000);  /* safety net */
+  var winLoaded=document.readyState==='complete',assetsLoaded=false;
+  function maybeFinish(){if(winLoaded&&assetsLoaded)closing=1}
+  if(winLoaded){}else window.addEventListener('load',function(){winLoaded=true;maybeFinish()});
+  if(window.CSKAssets)CSKAssets.preload(function(done){__cskProg(20+75*done)},window.CSK_PRE?'boot':'all').then(function(){assetsLoaded=true;maybeFinish()});
+  else assetsLoaded=true;
+  setTimeout(function(){closing=1},7000);  /* safety net */
 })();
 </script>
 <canvas id="c"></canvas><div id="kf"></div><div id="sb" hidden></div><div id="bc"></div><div id="msg"></div><div id="rc" hidden title="Tap to copy"></div><button id="home" hidden>BACK TO HOME</button><div id="rot"><div class="ph"></div>Rotate your phone to landscape to play</div>
@@ -71,28 +77,78 @@
 <div id="pm" hidden><div class="box"><h1>PAUSED</h1><div class="tag" id="pn"></div><button id="pr">RESUME</button><button class="s" id="pl">BUTTON LAYOUT</button><button class="s" id="ph">EXIT TO HOME</button></div></div>
 <div id="ed" hidden><canvas id="ec"></canvas><div id="ep"><b>BUTTON LAYOUT</b><span id="en"></span><label>Size <input type="range" id="esz" min="50" max="180" value="100"></label><label>Opacity <input type="range" id="eop" min="25" max="100" value="100"></label><button class="s" id="ers">RESET</button><button id="eok">SAVE &amp; CLOSE</button></div></div>
 <div id="menu"><div class="hs">
-<img class="hs-bg" src="home-bg.jpg" alt="CSuperKnights - Clash of Super Kings" draggable="false" decoding="sync" fetchpriority="high">
+<img class="hs-bg" data-src="home-art2.jpg" alt="Clash of Super Knights" draggable="false" decoding="sync">
 <div class="hs-ui">
- <button class="hs-btn hs-lit " id="stb" type="button" aria-label="Settings" style="--x:21;--y:13;--w:258;--h:87;--clip:polygon(5.814% 49.4253%,12.0155% 19.5402%,30.6202% 16.092%,93.4109% 16.092%,99.2248% 48.2759%,93.4109% 80.4598%,30.6202% 80.4598%,12.0155% 77.0115%)"><i class="face"></i><i class="fx"></i><span class="sr-only">Settings</span></button>
- <button class="hs-fs" id="fsb" type="button" aria-label="Enter full screen" aria-pressed="false" title="Full screen" style="--rx:1612;--cy:55;--w:94;--h:90">
-  <svg class="fs-ic fs-ex" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5V4h5.5M14.5 4H20v5.5M20 14.5V20h-5.5M9.5 20H4v-5.5"/></svg>
-  <svg class="fs-ic fs-co" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 4v5.5H4M20 9.5h-5.5V4M14.5 20v-5.5H20M4 14.5h5.5V20"/></svg>
-</button>
- 
  <div id="acc" data-s="guest" data-nudge="0">
-  <input id="nm" class="hs-name" maxlength="12" placeholder="Name" autocomplete="off" spellcheck="false" aria-label="Callsign" style="--x:1722;--y:31;--w:172;--h:48">
-  <button class="hs-btn hs-dim " id="acbtn" type="button" aria-label="Sign in with Google" style="--x:724;--y:401;--w:503;--h:66;--clip:polygon(4.7714% 10.6061%,95.4274% 10.6061%,97.4155% 25.7576%,97.4155% 77.2727%,95.4274% 90.9091%,4.7714% 90.9091%,2.7833% 77.2727%,2.7833% 25.7576%)"><i class="face"></i><i class="fx"></i><span class="hs-so" style="left:30.6163%;top:30.303%;width:50.0994%;height:43.9394%"><span id="acbl">SIGN IN WITH GOOGLE</span></span></button>
+  <button class="hb" id="pav" type="button" aria-label="Profile" style="--x:16;--y:22;--w:128;--h:128"><i class="face"></i><i class="pho"><img alt="" draggable="false" referrerpolicy="no-referrer" decoding="async"></i></button>
+  <input id="nm" class="hs-name" maxlength="12" placeholder="Player" autocomplete="off" spellcheck="false" aria-label="Callsign" tabindex="-1"><div id="nmv" class="nmv"><span id="nmt">Player</span></div>
+  <div class="lvn" id="lvn" aria-label="Level">1</div><div class="lvl" id="lvl" title="Level 1"><div class="lvt"><i class="lvf" id="lvf"></i><i class="lvg"></i></div><b class="lvx" id="lvx">2</b></div>
  </div>
- <button class="hs-btn hs-dim " id="solo" type="button" aria-label="Play solo" style="--x:716;--y:479;--w:519;--h:76;--clip:polygon(5.395% 6.5789%,93.6416% 6.5789%,97.8805% 47.3684%,93.6416% 89.4737%,5.395% 89.4737%,1.1561% 47.3684%)"><i class="face"></i><i class="fx"></i><span class="sr-only">Play solo</span></button>
- <label class="hs-hit" for="rm" style="--x:679;--y:569;--w:367;--h:71"></label>
- <input id="rm" class="hs-room" maxlength="5" placeholder="Enter room code..." autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Room code" style="--x:758;--y:586;--w:272;--h:40">
- <button class="hs-btn hs-lit " id="join" type="button" aria-label="Join room" style="--x:1049;--y:566;--w:203;--h:73;--clip:polygon(8.3744% 15.0685%,92.1182% 15.0685%,95.0739% 24.6575%,95.0739% 82.1918%,91.133% 90.411%,8.3744% 90.411%,4.4335% 82.1918%,4.4335% 24.6575%)"><i class="face"></i><i class="fx"></i><span class="sr-only">Join room</span></button>
- <button class="hs-btn hs-lit " id="host" type="button" aria-label="Create room" style="--x:752;--y:654;--w:434;--h:72;--clip:polygon(6.9124% 11.1111%,93.0876% 11.1111%,96.7742% 50%,93.0876% 90.2778%,6.9124% 90.2778%,3.2258% 50%)"><i class="face"></i><i class="fx"></i><span class="sr-only">Create room</span></button>
- <button class="hs-scan" id="scan" type="button" aria-label="Scan for nearby players" style="--x:679;--y:625;--w:367;--h:28"><i class="radar-mini"></i><span>SCAN NEARBY (WIFI)</span></button>
- <button class="hs-cs" id="cs" type="button" data-s="wait" style="--x:640;--y:742;--w:703;--h:42"><i></i><span>Connecting…</span></button>
+ <button class="hb" id="fsb" type="button" aria-label="Enter full screen" aria-pressed="false" style="--x:1430;--y:18;--w:97;--h:97"><i class="face"></i><svg class="fco" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 4v5.5H4M20 9.5h-5.5V4M14.5 20v-5.5H20M4 14.5h5.5V20"/></svg></button>
+ <button class="hb" id="stb" type="button" aria-label="Settings" style="--x:1550;--y:18;--w:100;--h:97"><i class="face"></i></button>
+ <button class="hb sel" id="mroom" type="button" aria-label="Room" style="--x:1285;--y:462;--w:345;--h:106"><i class="face"></i></button>
+ <button class="hb" id="msolo" type="button" aria-label="Solo" style="--x:1285;--y:575;--w:347;--h:97"><i class="face"></i></button>
+ <button class="hb" id="mstart" type="button" aria-label="Start" style="--x:1140;--y:695;--w:520;--h:210"><i class="face"></i></button>
+ <button class="hs-cs" id="cs" type="button" data-s="wait"><i></i><span>Connecting…</span></button>
 </div>
-<div hidden><div class="h-av" id="acav">G</div><b id="acn">Guest</b><small id="acs"></small><button id="l1" class="on" type="button">ARENA</button><button id="l2" type="button">FORTRESS</button><button class="h-ico" id="set" type="button">BUTTON LAYOUT</button><button class="h-ico" id="mt" type="button">SOUND: ON</button><button class="h-ico" id="fs" type="button">FULLSCREEN</button><div id="hk"></div><div id="tip"></div></div>
-</div></div>
+<div id="pop" hidden role="dialog" aria-label="Room">
+ <div class="zc" id="pmain" style="--W:1424;--H:997">
+  <i class="zbg" style="background-image:url(rm-main.webp)"></i>
+  <button class="zb" id="pcreate" type="button" aria-label="Create room" style="--x:154;--y:354;--w:1115;--h:240"><i class="face"></i></button>
+  <button class="zb" id="pjoin" type="button" aria-label="Join room" style="--x:154;--y:614;--w:1115;--h:245"><i class="face"></i></button>
+  <button class="zb zx" id="pclose" type="button" aria-label="Close" style="--x:1182;--y:174;--w:130;--h:130"><i class="face"></i></button>
+ </div>
+ <div class="zc zs" id="pnew" hidden style="--W:772;--H:955">
+  <i class="zbg" style="background-image:url(rm-create.webp)"></i>
+  <input class="zi" id="rn" maxlength="20" autocomplete="off" spellcheck="false" aria-label="Room name" style="--x:262;--y:425;--w:390;--h:100">
+  <button class="zb" id="pmk" type="button" aria-label="Create" style="--x:79;--y:590;--w:620;--h:205"><i class="face"></i></button>
+  <button class="zb zx" id="pnclose" type="button" aria-label="Back" style="--x:639;--y:45;--w:118;--h:105"><i class="face"></i></button>
+ </div>
+ <div class="zc zs" id="pcode" hidden style="--W:772;--H:954">
+  <i class="zbg" style="background-image:url(rm-join.webp)"></i>
+  <input class="zi" id="rm" maxlength="5" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Room code" style="--x:262;--y:424;--w:390;--h:100">
+  <button class="zb" id="pgo" type="button" aria-label="Join" style="--x:73;--y:589;--w:635;--h:205"><i class="face"></i></button>
+  <button class="zb zx" id="pcclose" type="button" aria-label="Back" style="--x:641;--y:44;--w:109;--h:105"><i class="face"></i></button>
+ </div>
+</div>
+</div>
+<div hidden id="hid"><button id="acbtn" type="button"><span id="acbl"></span></button><button id="solo" type="button"></button><button id="host" type="button"></button><button id="join" type="button"></button><div class="h-av" id="acav">G</div><b id="acn">Guest</b><small id="acs"></small><button id="l1" class="on" type="button">ARENA</button><button id="l2" type="button">FORTRESS</button><button class="h-ico" id="set" type="button">BUTTON LAYOUT</button><button class="h-ico" id="mt" type="button">SOUND: ON</button><button class="h-ico" id="fs" type="button">FULLSCREEN</button><div id="hk"></div><div id="tip"></div></div>
+</div>
+
+<!-- Login screen: only Google sign-in or Gmail + password. Shown whenever nobody is signed in. -->
+<div id="login" hidden role="dialog" aria-modal="true" aria-label="Sign in">
+  <img class="lg-bg" src="login-bg.jpg" alt="Clash of Super Knights - sign in" draggable="false" decoding="sync">
+  <div class="lg-ui">
+    <button class="lg-fs" id="lg-fs" type="button" aria-label="Enter full screen" aria-pressed="false" title="Full screen">
+      <svg class="f-ex" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5V4h5.5M14.5 4H20v5.5M20 14.5V20h-5.5M9.5 20H4v-5.5"/></svg>
+      <svg class="f-co" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 4v5.5H4M20 9.5h-5.5V4M14.5 20v-5.5H20M4 14.5h5.5V20"/></svg>
+    </button>
+    <button class="lg-a lg-btn" id="lg-google" type="button" aria-label="Sign in with Google" style="--x:601;--y:299;--w:471;--h:71"><img src="login-btn-google.png" alt="" draggable="false"></button>
+    <form id="lg-form" novalidate autocomplete="on">
+      <div class="lg-a lg-fld" style="--x:602;--y:448;--w:469;--h:62"><input class="lg-in" id="lg-em" name="username" type="email" inputmode="email" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="Gmail address" aria-label="Gmail address"></div>
+      <div class="lg-a lg-fld lg-pw" style="--x:602;--y:528;--w:469;--h:62"><input class="lg-in" id="lg-pw" name="password" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password">
+        <button class="lg-eye" id="lg-eye" type="button" aria-label="Show password" aria-pressed="false">
+          <svg class="e-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.8 12S5.6 5.2 12 5.2 22.2 12 22.2 12 18.4 18.8 12 18.8 1.8 12 1.8 12z"/><circle cx="12" cy="12" r="3.2"/></svg>
+          <svg class="e-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.8 12S5.6 5.2 12 5.2c2 0 3.8.7 5.3 1.7M22.2 12S18.4 18.8 12 18.8c-2 0-3.8-.7-5.3-1.7"/><circle cx="12" cy="12" r="3.2"/><path d="M3.5 3.5l17 17"/></svg>
+        </button></div>
+      <button class="lg-a lg-btn is-off" id="lg-go" type="submit" aria-label="Login" aria-disabled="true" style="--x:601;--y:617;--w:471;--h:69"><img src="login-btn-go.png" alt="" draggable="false"></button>
+    </form>
+    <label class="lg-a lg-terms" id="lg-terms" style="--x:605;--y:705;--w:466;--h:33"><input type="checkbox" id="lg-tc"><span class="lg-box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span>I agree to the <a id="lg-tl" role="button" tabindex="0">Terms and Conditions</a></span></label>
+    <div class="lg-a lg-msg" id="lg-msg" role="alert" style="--x:602;--y:744;--w:469;--h:40"></div>
+  </div>
+  <div class="lg-modal" id="lg-tm" hidden role="dialog" aria-modal="true" aria-label="Terms and Conditions">
+    <div class="lg-modal-box"><h2>TERMS AND CONDITIONS</h2>
+      <ul>
+        <li>Play fair: no cheating, hacks, exploits or abusing bugs.</li>
+        <li>Be respectful to other players in names and in rooms.</li>
+        <li>Your account is yours. Keep your password private; you are responsible for activity on it.</li>
+        <li>Your name is permanent once you set it, on every device.</li>
+        <li>Your name, password, stats and settings are stored in your account so you can sign in on other devices.</li>
+        <li>Accounts that break these rules can be limited or removed.</li>
+      </ul>
+      <button id="lg-tx" type="button">OK</button></div>
+  </div>
+</div>
 
 <!-- Room waiting lobby: shown after Create Room / Join Room, before the match actually starts.
      Pure additive overlay — does not touch any id/class the core game script reads. The match
@@ -121,27 +177,9 @@
   </div>
 </div>
 
-<!-- Radar: scans for nearby hosts on the same WiFi instead of typing a room code.
-     Pure additive overlay (radar.js). Tapping a blip reuses the exact same
-     checkRoom()/attachRoom() path the typed-code box already used. -->
-<div id="radar" hidden role="dialog" aria-modal="true" aria-label="Scan for nearby players">
-  <div class="radar-panel">
-    <div class="radar-top">
-      <h2>NEARBY PLAYERS</h2>
-      <button class="radar-x" id="radar-close" type="button" aria-label="Close">&#10005;</button>
-    </div>
-    <div class="radar-dish" id="radar-dish"><i class="radar-sweep"></i><i class="radar-ring r1"></i><i class="radar-ring r2"></i><i class="radar-ring r3"></i><i class="radar-core"></i></div>
-    <div class="radar-status" id="radar-status">Scanning for nearby players…</div>
-    <div class="radar-list" id="radar-list"></div>
-    <div class="radar-empty" id="radar-empty">No one nearby yet. Make sure your friends are on the same WiFi and have created a room.</div>
-    <button class="radar-rescan" id="radar-rescan" type="button" hidden>SCAN AGAIN</button>
-  </div>
-</div>
+<div id="st" hidden role="dialog" aria-label="Settings"><div class="sxw"><div class="sx" data-p="g"><button class="hz" id="stx" type="button" aria-label="Close" style="--x:1396;--y:80;--w:104;--h:104"></button><button class="hz" type="button" data-t="g" aria-label="General" style="--x:140;--y:203;--w:326;--h:84"></button><button class="hz" type="button" data-t="k" aria-label="Keyboard" style="--x:486;--y:203;--w:314;--h:84"></button><div class="pg" id="sx-g"><button class="so" id="st-so" type="button" aria-label="Sign out" hidden style="--x:165;--y:806;--w:336;--h:70"><span>⎋ SIGN OUT</span></button><div class="pt st" style="--x:203;--y:367;--w:116;--h:42"><b id="s1">0</b></div><div class="pt st" style="--x:395;--y:367;--w:116;--h:42"><b id="s2">0</b></div><div class="pt st" style="--x:587;--y:367;--w:116;--h:42"><b id="s3">0</b></div><div class="pt st" style="--x:784;--y:367;--w:116;--h:42"><b id="s4">0</b></div><div class="pt ac" style="--x:158;--y:452;--w:782;--h:84"><div class="accb" id="accb"><div class="accb-h"><b>GUN ACCURACY</b><span id="accT">–</span><em id="accC"></em></div><div id="accR"></div></div></div><div class="pt vl" style="--x:1172;--y:380;--w:160;--h:32"><input type="range" id="vol" min="0" max="100"></div><div class="pt vt" style="--x:1334;--y:380;--w:56;--h:32"><span id="vv"></span></div><button class="sk" id="o-mute" role="switch" type="button" style="--x:1324;--y:435;--w:56;--h:34"><i></i></button><button class="sk" data-o="dr" role="switch" type="button" style="--x:1324;--y:491;--w:56;--h:34"><i></i></button><button class="sk tg" data-k="dn" role="switch" type="button" style="--x:443;--y:618;--w:56;--h:34"><i></i></button><button class="sk tg" data-k="fps" role="switch" type="button" style="--x:443;--y:680;--w:56;--h:34"><i></i></button><button class="sk" data-o="hf" role="switch" type="button" style="--x:895;--y:789;--w:56;--h:34"><i></i></button><button class="sk" data-o="kf" role="switch" type="button" style="--x:895;--y:845;--w:56;--h:34"><i></i></button><button class="sk" data-o="an" role="switch" type="button" style="--x:1326;--y:616;--w:56;--h:34"><i></i></button><button class="sk" data-o="tp" role="switch" type="button" style="--x:1326;--y:673;--w:56;--h:34"><i></i></button><div class="seg" data-seg="gfx" style="--x:778;--y:615;--w:176;--h:38"><button type="button" data-i="0">LOW</button><button type="button" data-i="1">MED</button><button type="button" data-i="2">HIGH</button></div><div class="seg" data-seg="shk" style="--x:778;--y:677;--w:176;--h:38"><button type="button" data-i="0">OFF</button><button type="button" data-i="1">LOW</button><button type="button" data-i="2">FULL</button></div><div class="seg" data-seg="fx" style="--x:778;--y:734;--w:176;--h:38"><button type="button" data-i="0">LOW</button><button type="button" data-i="1">MED</button><button type="button" data-i="2">HIGH</button></div><button class="hz" id="o-fs" type="button" aria-label="Fullscreen" style="--x:389;--y:744;--w:112;--h:42"></button><button class="hz" id="o-ed" type="button" aria-label="Edit layout" style="--x:1253;--y:729;--w:154;--h:42"></button><button class="hz" id="o-rs" type="button" aria-label="Reset settings" style="--x:1276;--y:788;--w:103;--h:40"></button><button class="hz" id="o-rt" type="button" aria-label="Reset career stats" style="--x:1276;--y:844;--w:103;--h:40"></button></div><div class="pg" id="sx-k" hidden><button class="hz" id="kb-rs" type="button" aria-label="Reset controls" style="--x:1060;--y:334;--w:328;--h:62"></button><div id="kg"></div></div></div></div></div><div id="swp" class="off"></div><div id="swb" class="off" role="button" aria-label="Swap weapon"></div><div id="eqp"></div><div id="crb" class="off" role="button" aria-label="Open crate"></div><div id="crp" class="off"></div><div id="fps"></div><div id="err" role="alert"></div>
 
-<div id="st" hidden role="dialog" aria-label="Settings"><div class="st-top"><div><h2>SETTINGS</h2><span>Changes save automatically · v4.1</span></div><button class="st-done" id="stx" type="button">DONE</button></div><div class="st-grid"><section class="st-card st-wide st-prof"><h3>Profile</h3><div class="h-st"><div><b id="s1">0</b><span>KILLS</span></div><div><b id="s2">0.0</b><span>K/D</span></div><div><b id="s3">0</b><span>WINS</span></div><div><b id="s4">0</b><span>STREAK</span></div></div><div class="accb" id="accb" hidden><div class="accb-h"><b>GUN ACCURACY</b><span id="accT">–</span><em id="accC"></em></div><div id="accR"></div></div></section><section class="st-card"><h3>Audio</h3><div class="sr"><div class="sl"><b>Master volume</b><small>Loudness of all game sound</small></div><div class="vol"><input type="range" id="vol" min="0" max="100"><span id="vv"></span></div></div><div class="sr"><div class="sl"><b>Sound effects</b><small>Guns, hits and menu clicks</small></div><button class="sk" id="o-mute" role="switch" type="button"><i></i></button></div><div class="sr"><div class="sl"><b>Battle drums</b><small>War drums during intense fights</small></div><button class="sk" data-o="dr" role="switch" type="button"><i></i></button></div></section><section class="st-card"><h3>Display</h3><div class="sr"><div class="sl"><b>Damage numbers</b><small>Floating hit values</small></div><button class="sk tg" data-k="dn" role="switch" type="button"><i></i></button></div><div class="sr"><div class="sl"><b>FPS counter</b><small>Frame rate readout</small></div><button class="sk tg" data-k="fps" role="switch" type="button"><i></i></button></div><div class="sr"><div class="sl"><b>Fullscreen</b><small>Hide browser bars</small></div><button class="act" id="o-fs" type="button">TOGGLE</button></div></section><section class="st-card"><h3>Effects</h3><div class="sr"><div class="sl"><b>Screen shake</b><small>Camera kick on shots and hits</small></div><div class="seg" data-seg="shk"><button type="button" data-i="0">OFF</button><button type="button" data-i="1">LOW</button><button type="button" data-i="2">FULL</button></div></div><div class="sr"><div class="sl"><b>Particles</b><small>Sparks and explosion detail</small></div><div class="seg" data-seg="fx"><button type="button" data-i="0">LOW</button><button type="button" data-i="1">MED</button><button type="button" data-i="2">HIGH</button></div></div><div class="sr"><div class="sl"><b>Damage flash</b><small>Red edge when you are hit</small></div><button class="sk" data-o="hf" role="switch" type="button"><i></i></button></div><div class="sr"><div class="sl"><b>Kill feed</b><small>Who eliminated who</small></div><button class="sk" data-o="kf" role="switch" type="button"><i></i></button></div></section><section class="st-card"><h3>Interface</h3><div class="sr"><div class="sl"><b>Menu animations</b><small>Moving background and shine</small></div><button class="sk" data-o="an" role="switch" type="button"><i></i></button></div><div class="sr"><div class="sl"><b>Home tips</b><small>Hints on the home screen</small></div><button class="sk" data-o="tp" role="switch" type="button"><i></i></button></div><div class="sr"><div class="sl"><b>Touch buttons</b><small>Move and resize on-screen controls</small></div><button class="act" id="o-ed" type="button">EDIT LAYOUT</button></div><div class="sr"><div class="sl"><b>Reset settings</b><small>Back to defaults</small></div><button class="act" id="o-rs" type="button">RESET</button></div><div class="sr"><div class="sl"><b>Reset career stats</b><small>Kills, wins and streak</small></div><button class="act" id="o-rt" type="button">RESET</button></div></section><section class="st-card st-wide"><h3>Controls</h3><div class="sr kb-top"><div class="sl"><b>Keyboard bindings</b><small>Click a key box, then press the new key · Backspace clears it · Esc cancels · saved automatically</small></div><button class="act" id="kb-rs" type="button">RESET CONTROLS</button></div><div class="kg" id="kg"></div></section></div></div><div id="swp" class="off"></div><div id="swb" class="off" role="button" aria-label="Swap weapon"></div><div id="eqp"></div><div id="crb" class="off" role="button" aria-label="Open crate"></div><div id="crp" class="off"></div><div id="fps"></div><div id="err" role="alert"></div>
-
-<!-- Sound bank (large, kept as its own file to keep index.html light) -->
-<script src="sfx-data.js"></script>
+<!-- Sound bank (2 MB): loaded by boot-gate.js after login, not here -->
 <script>window.__cskProg&&__cskProg(45)</script>
 <!-- Firebase (multiplayer backend) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -151,10 +189,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script>window.__cskProg&&__cskProg(78)</script>
 <!-- Game logic (unmodified, concatenated from the original inline scripts in original order) -->
-<script src="home-fx.js"></script>
+<script src="home-fx.js"></script><script src="home-anim.js"></script><script src="clouds.js"></script>
 <script src="fullscreen.js"></script>
-<script src="game.js"></script>
-<script src="_sync.js"></script>
+<script src="battle-fx.js"></script>
+<link rel="stylesheet" href="victory.css"><script src="victory.js"></script><script src="game.js"></script>
 <script>/* wss:// address of your relay server (see RELAY-DEPLOY.md). Leave empty to use P2P + Firebase only. Can also be set per visit with ?relay=wss://... */
 window.CSK_RELAY_URL="";</script>
 <script src="rtc.js"></script>
@@ -162,7 +200,7 @@ window.CSK_RELAY_URL="";</script>
 <!-- Room waiting lobby: additive layer, loads after game.js so it can call the game's own start() -->
 <script src="lobby-fx.js"></script>
 <script src="lobby.js"></script>
-<!-- Radar: WiFi-local nearby-player scan, replaces typing a room code -->
-<script src="radar.js"></script>
+<script src="login.js"></script>
+<script src="home-new.js"></script><script src="fx.js"></script><script>(function(){var b=document.getElementById("st-so"),a=document.getElementById("acc");function f(){b.hidden=!a||a.dataset.s==="guest"}f();new MutationObserver(f).observe(a,{attributes:true,attributeFilter:["data-s"]});b.onclick=function(){document.getElementById("stx").click();var x=document.getElementById("acbtn");if(x)x.click()}})()</script><script>(function(){var st=document.getElementById("st"),sx=st.querySelector(".sx");st.addEventListener("click",function(e){var b=e.target.closest("[data-t]");if(!b)return;sx.dataset.p=b.dataset.t;document.getElementById("sx-g").hidden=b.dataset.t!=="g";document.getElementById("sx-k").hidden=b.dataset.t!=="k"})})()</script>
 <script>window.__cskProg&&__cskProg(97)</script>
 </body></html>

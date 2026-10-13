@@ -1,0 +1,48 @@
+/* ===========================================================
+   LOADING SCREEN (first-boot splash #csk-splash + every screen switch #csk-load)
+   - Art: ld-bw/night/day/dusk.jpg (see loading.js).
+   - Fit: the art is 2.5:1 and always FILLS the screen (object-fit:cover, never stretched, no bars).
+     On screens narrower than 2.5:1 the sides are trimmed around a per-image focus point (--ox).
+   - The progress bar, "LOADING..." label, % and tip are live HTML sitting in a strip along the bottom,
+     sized from --u (1 unit = 1px on a 1983x793 screen) so they scale with any screen.
+   =========================================================== */
+#csk-splash,#csk-load{position:fixed;inset:0;display:block;background:#05080b;overflow:hidden;container-type:size}
+#csk-splash{z-index:999;transition:opacity .5s ease,visibility .5s}
+#csk-splash::before{content:none}
+#csk-splash.csk-hide{opacity:0;visibility:hidden;pointer-events:none}
+#csk-load{z-index:990;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s}
+#csk-load.on{opacity:1;visibility:visible;pointer-events:auto}   /* while up it also swallows taps, so nothing double-fires */
+#csk-load[hidden]{display:none}
+
+/* Stage = the 1984x793 art scaled to COVER the screen (never stretched, no bars); everything on it is placed in art pixels,
+   so the live bar always sits exactly on the painted one at any screen size. */
+.sp-stage{--s:max(calc(100cqw / 1984),calc(100cqh / 793));position:absolute;width:calc(1984 * var(--s));height:calc(793 * var(--s));
+  left:calc((100cqw - 1984 * var(--s)) * var(--oxn,.5));top:calc((100cqh - 793 * var(--s)) * .4)}
+.sp-bg{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;-webkit-user-drag:none}
+
+/* live progress bar over the painted one */
+.sp-bar{position:absolute;left:calc(var(--bx,681) / 1984 * 100%);top:calc(var(--by,550) / 793 * 100%);width:calc(var(--bw,597) / 1984 * 100%);height:calc(var(--bh,28) / 793 * 100%);
+  overflow:hidden;border-radius:calc(var(--s) * 5);clip-path:polygon(1.2% 0,100% 0,98.8% 100%,0 100%);background:#03060a}
+.sp-fill{position:absolute;left:0;top:0;bottom:0;width:0;overflow:hidden;
+  background:linear-gradient(180deg,#fff2b0 0,#ffc83a 30%,#ff9a12 70%,#d9650a 100%);box-shadow:0 0 calc(var(--s) * 16) #ffb02ecc}
+/* moving diagonal shine */
+.sp-fill::before{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(115deg,#ffffff00 0 calc(var(--s) * 18),#ffffff55 calc(var(--s) * 18) calc(var(--s) * 30),#ffffff00 calc(var(--s) * 30) calc(var(--s) * 48));
+  background-size:calc(var(--s) * 96) 100%;animation:spStripe .8s linear infinite}
+/* bright sweep + hot leading edge */
+.sp-fill::after{content:"";position:absolute;top:0;bottom:0;right:0;width:calc(var(--s) * 46);
+  background:linear-gradient(90deg,#fff0,#fffbe6cc 70%,#fff);filter:blur(calc(var(--s) * 1.5));animation:spPulse .9s ease-in-out infinite alternate}
+@keyframes spStripe{to{background-position:calc(var(--s) * 96) 0}}
+@keyframes spPulse{from{opacity:.55}to{opacity:1}}
+.sp-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;
+  font:700 calc(var(--s) * 22) / 1 var(--csk-font-display,Rajdhani,system-ui,sans-serif);letter-spacing:.08em;color:#fff;
+  -webkit-text-stroke:max(1px,calc(var(--s) * 3)) #1a0d00;paint-order:stroke fill;text-shadow:0 1px 3px #000a}
+
+/* rotating tip (text comes from CSKTips in loading.js) */
+.sp-tip{position:absolute;left:50%;top:calc(704 / 793 * 100%);transform:translateX(-50%);max-width:70%;box-sizing:border-box;
+  padding:calc(var(--s) * 6) calc(var(--s) * 22);border-radius:999px;background:#05080bb0;
+  text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-family:var(--csk-font-body,Inter,system-ui,sans-serif);font-weight:500;letter-spacing:.01em;color:#fff;
+  font-size:max(10px,calc(var(--s) * 20));line-height:1.3;text-shadow:0 1px 3px #000;
+  transition:opacity .24s ease;pointer-events:none}
+.sp-tip:empty{display:none}

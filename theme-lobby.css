@@ -8,7 +8,7 @@
 
    lobby-bg.jpg   = waiting-room art with the placeholder text
                     ("Player 01", "20 PLAYERS...", "START") painted out
-   loading-bg.jpg = loading art with the "72%" bar fill painted out
+   (loading screen art + styles now live in loading.css / loading-1..4.jpg)
    =========================================================== */
 
 /* ---------------------------------------------------------- waiting room */
@@ -44,8 +44,7 @@
 .lob-btn .face{position:absolute;inset:0;display:block;pointer-events:none;
   background:url("lobby-bg.jpg") no-repeat;background-size:var(--bgw) var(--bgh);background-position:var(--bgx) var(--bgy);
   clip-path:var(--clip);-webkit-clip-path:var(--clip);opacity:0;
-  transition:transform .12s cubic-bezier(.2,.8,.2,1),filter .12s,opacity .08s}
-@media (hover:hover){.lob-btn:not(:disabled):hover .face{opacity:1;filter:brightness(1.12) saturate(1.1)}}
+  transition:transform .12s cubic-bezier(.2,.8,.2,1),filter .12s,opacity .08s}@media (hover:hover){.lob-btn:not(:disabled):hover .face{opacity:1;filter:brightness(1.12) saturate(1.1)}}
 .lob-btn:not(:disabled):active .face{opacity:1;filter:brightness(.85) saturate(1.15);transform:translateY(3%) scale(.965);transition-duration:.06s}
 .lob-btn:focus-visible{outline:2px solid #ffd067;outline-offset:3px}
 
@@ -84,8 +83,7 @@
   padding:0 6%;font-weight:700;font-size:calc(var(--u) * 15);letter-spacing:.03em;color:#fff;line-height:1;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:0 1px 2px #000}
 .lob-pill small{font-weight:600;color:#9fb8d8;margin-left:.4em;font-size:.8em}
-.lob-open .lob-pill{color:#6f8db8;letter-spacing:.1em}
-@media (hover:hover){.lob-open:hover .lob-pill{color:#cfe3ff}
+.lob-open .lob-pill{color:#6f8db8;letter-spacing:.1em}@media (hover:hover){.lob-open:hover .lob-pill{color:#cfe3ff}
   .lob-open:hover .lob-glow{opacity:1}}
 .lob-glow{inset:2px;opacity:0;pointer-events:none;border-radius:6px;transition:opacity .15s;
   box-shadow:0 0 calc(var(--u) * 16) #ffb02e99,inset 0 0 calc(var(--u) * 14) #ffb02e44;border:1px solid #ffd067aa}
@@ -117,53 +115,10 @@
 /* ---------- dimmed Create Room button when logged out ---------- */
 #host.lob-locked-btn{opacity:.5;filter:grayscale(.4)}
 
-/* ---------------------------------------------------------- loading screen */
-#csk-splash{position:fixed;inset:0;z-index:999;display:block;background:#05080b;overflow:hidden;
-  container-type:size;transition:opacity .5s ease,visibility .5s}
-#csk-splash::before{content:none}
-#csk-splash.csk-hide{opacity:0;visibility:hidden;pointer-events:none}
-#csk-splash .sp-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;pointer-events:none;-webkit-user-drag:none}
-#csk-splash .sp-ui{position:absolute;inset:0;--u:min(100cqw / 1983, 100cqh / 793)}
-/* real progress bar laid exactly inside the painted frame (artwork px 690,565 596x29) */
-#csk-splash .sp-track{position:absolute;overflow:hidden;
-  left:calc(690 / 1983 * 100%);top:calc(565 / 793 * 100%);width:calc(596 / 1983 * 100%);height:calc(29 / 793 * 100%)}
-#csk-splash .sp-fill{position:absolute;left:0;top:0;bottom:0;width:0;
-  background:linear-gradient(180deg,#fff08a 0,#ffd21f 22%,#ffb000 55%,#ff8a00 100%);
-  clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%);
-  box-shadow:inset 0 1px 0 #fff8c8}
-#csk-splash .sp-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-family:var(--csk-font-display);font-weight:700;letter-spacing:.06em;color:#fff;line-height:1;
-  font-size:calc(var(--u) * 26);-webkit-text-stroke:calc(var(--u) * 3) #3a2200;paint-order:stroke fill;
-  text-shadow:0 1px 3px #000a}
-
-/* ---------------------------------------------------------- live tip (the painted tip was removed from loading-bg.jpg) */
-/* sits where the painted tip used to be (artwork px: x 560-1423, y 681-705) */
-.sp-tip{position:absolute;left:calc(560 / 1983 * 100%);width:calc(863 / 1983 * 100%);top:calc(681 / 793 * 100%);height:calc(24 / 793 * 100%);
-  display:flex;align-items:center;justify-content:center;text-align:center;white-space:nowrap;overflow:hidden;
-  font-family:var(--csk-font-body,Inter,system-ui,sans-serif);font-weight:500;letter-spacing:.01em;color:#fff;
-  font-size:calc(var(--u) * 17.5);line-height:1;text-shadow:0 1px 3px #000,0 0 calc(var(--u) * 8) #000;
-  transition:opacity .24s ease;pointer-events:none}
-
-/* ---------------------------------------------------------- reusable loader (every screen switch) */
-#csk-load{position:fixed;inset:0;z-index:990;display:block;background:#05080b;overflow:hidden;container-type:size;
-  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s}
-#csk-load.on{opacity:1;visibility:visible;pointer-events:auto}   /* while up it also swallows taps, so nothing double-fires */
-#csk-load[hidden]{display:none}
-#csk-load .sp-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;pointer-events:none;-webkit-user-drag:none}
-#csk-load .sp-ui{position:absolute;inset:0;--u:min(100cqw / 1983, 100cqh / 793)}
-#csk-load .sp-track{position:absolute;overflow:hidden;
-  left:calc(690 / 1983 * 100%);top:calc(565 / 793 * 100%);width:calc(596 / 1983 * 100%);height:calc(29 / 793 * 100%)}
-#csk-load .sp-fill{position:absolute;left:0;top:0;bottom:0;width:0;
-  background:linear-gradient(180deg,#fff08a 0,#ffd21f 22%,#ffb000 55%,#ff8a00 100%);
-  clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%);box-shadow:inset 0 1px 0 #fff8c8}
-#csk-load .sp-pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-family:var(--csk-font-display);font-weight:700;letter-spacing:.06em;color:#fff;line-height:1;
-  font-size:calc(var(--u) * 26);-webkit-text-stroke:calc(var(--u) * 3) #3a2200;paint-order:stroke fill;text-shadow:0 1px 3px #000a}
-/* the splash needs --u for the tip font size too (it already defines it on .sp-ui) */
+/* (loading screen styles moved to loading.css) */
 
 /* ---------------------------------------------------------- host: tap a player -> small popup with KICK OUT */
-.lob-pick{cursor:pointer}
-@media (hover:hover){.lob-pick:hover .lob-glow{opacity:1}}
+.lob-pick{cursor:pointer}@media (hover:hover){.lob-pick:hover .lob-glow{opacity:1}}
 .lob-pop{z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u) * 7);
   padding:calc(var(--u) * 8);border-radius:calc(var(--u) * 10);
   background:linear-gradient(180deg,#101c33f2,#070d1af2);border:1px solid #ffd067aa;
@@ -223,5 +178,4 @@
 /* soft vignette + blur toward the very bottom so the scene melts into the art */
 .fx-haze{left:0;right:0;bottom:0;height:30%;background:linear-gradient(180deg,transparent,#04070dcc);
   -webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px);
-  -webkit-mask-image:linear-gradient(180deg,transparent,#000 70%);mask-image:linear-gradient(180deg,transparent,#000 70%)}
-@media (prefers-reduced-motion:reduce){.lob-fx{display:none}}
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 70%);mask-image:linear-gradient(180deg,transparent,#000 70%)}@media (prefers-reduced-motion:reduce){.lob-fx{display:none}}

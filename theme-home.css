@@ -39,9 +39,7 @@
     linear-gradient(180deg,#05080bb3 0%,#05080b22 22%,#05080b00 42%,#05080b3d 68%,#05080be6 100%);
   z-index:1;
 }
-#menu .hp{position:relative;z-index:2}
-
-@media (prefers-reduced-motion:reduce){
+#menu .hp{position:relative;z-index:2}@media (prefers-reduced-motion:reduce){
   #menu::before{animation:none}
 }
 
@@ -196,58 +194,6 @@
 }
 #menu .hp-gear:hover{border-color:#ffb02e99;transform:rotate(26deg)}
 
-/* ---------- settings dialog ---------- */
-#st{
-  background:
-    radial-gradient(1000px 600px at 50% -10%, #1c2a3a 0%, transparent 55%),
-    var(--csk-ink);
-}
-#st .st-top h2{
-  font-family:var(--csk-font-display);
-  font-weight:700;letter-spacing:.14em;
-  background:linear-gradient(180deg,#fff,#c3ccd3);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-}
-#st .st-top span{color:var(--csk-text-dim)}
-.st-done{
-  background:linear-gradient(180deg,var(--csk-amber-soft),var(--csk-amber));
-  color:#1a0d00;border:1px solid #ffc968;font-weight:700;
-  box-shadow:0 8px 20px -6px #ff8a1f66, inset 0 1px 0 #ffffffaa;
-}
-.st-done:hover{filter:brightness(1.05)}
-
-.st-card{
-  background:linear-gradient(180deg,#121b24b3,#0b1319b3);
-  border:1px solid var(--csk-line-soft);
-  box-shadow:var(--csk-shadow-1);
-  border-radius:var(--csk-radius-md);
-}
-.st-card h3{
-  color:var(--csk-amber);
-  font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:11px;
-}
-.st-prof .h-st b{
-  font-family:var(--csk-font-display);
-  background:linear-gradient(180deg,#fff,#c3ccd3);
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-}
-
-#st .sk{background:#ffffff14;border:1px solid var(--csk-line-soft)}
-#st .sk.on,#st .sk[aria-checked="true"]{
-  background:linear-gradient(180deg,var(--csk-amber-soft),var(--csk-amber));
-  border-color:#ffc968;
-}
-#st .seg{border:1px solid var(--csk-line-soft);border-radius:var(--csk-radius-sm)}
-#st .seg button.on,#st .seg button[aria-pressed="true"]{
-  background:linear-gradient(180deg,var(--csk-amber-soft),var(--csk-amber));
-  color:#1a0d00;
-}
-.act{
-  background:linear-gradient(180deg,#19232ecc,#0f161ecc);
-  border:1px solid var(--csk-line-soft);
-  font-weight:700;letter-spacing:.08em;
-}
-.act:hover{border-color:#ffb02e99}
 
 /* ---------- focus rings everywhere ---------- */
 #menu button:focus-visible,#st button:focus-visible{
@@ -262,7 +208,6 @@
 @keyframes hpRise{
   from{opacity:0;transform:translateY(10px)}
   to{opacity:1;transform:translateY(0)}
-}
-@media (prefers-reduced-motion:reduce){
+}@media (prefers-reduced-motion:reduce){
   #menu .hp-main > *{animation:none}
 }

@@ -197,14 +197,9 @@ function attachRoom(roomCode,isHost){
   if(v&&!countdownT&&!enteredMatch)beginCountdown()},()=>{});
  mySeat=amHost?0:-1;myReady=0;
  writeMe({});
- showLobby();
- if(amHost){try{window.CSKRadarHost&&CSKRadarHost.start(code)}catch(e){}}}
-window.CSKAttachRoom=attachRoom;             /* lets radar.js (and any other code) reuse the exact same join path as the typed-code box */
-window.CSKKickLeft=kickLeft;
-window.CSKLobbyOpenSeats=()=>Math.max(0,8-Object.keys(roster).length);  /* used by the host's radar beacon to show "N seats open" to scanners; MAXH is 8 */
+ showLobby()}
 
 function detachRoom(){
- try{window.CSKRadarHost&&CSKRadarHost.stop()}catch(e){}
  try{window.CSKRtc&&CSKRtc.stop()}catch(e){}
  try{if(lobRoot)lobRoot.off()}catch(e){}
  try{if(startRef)startRef.off()}catch(e){}
@@ -245,7 +240,6 @@ function enterMatch(){
  if(enteredMatch)return;enteredMatch=1;
  const L=LOAD(),host=amHost,rc=code;
  L.show();
- try{window.CSKRadarHost&&CSKRadarHost.stop()}catch(e){}   /* match is starting: stop advertising, no more joins possible */
  try{window.CSKFullscreen&&CSKFullscreen.enter()}catch(e){}   /* works if the browser still counts a recent tap; READY/START already asked */
  try{if(lobRoot)lobRoot.off()}catch(e){}
  try{if(startRef)startRef.off()}catch(e){}
@@ -274,7 +268,7 @@ function goOnlineLobby(mode){
   if(!requireLogin())return;
   L.show();busyUI(1);$('msg').textContent='';
   waitUp(9000).then(()=>withTimeout(createRoomCode(),9000)).then(c=>{
-   busyUI(0);enteredMatch=0;attachRoom(c,true);L.hide()
+   busyUI(0);enteredMatch=0;attachRoom(c,true);L.hide();try{const rn=String(window.CSK_ROOM_NAME||'').trim().slice(0,20);window.CSK_ROOM_NAME='';if(rn)FBdb.ref('rooms/'+c+'/name').set(rn).catch(()=>{})}catch(e){}
   }).catch(fail);
   return}
  const rc=cleanRoom($('rm').value);

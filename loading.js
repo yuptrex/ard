@@ -6,7 +6,7 @@
    - CSKTips.attach(el)  : puts a tip into el and swaps it for a different one every few seconds.
                            Tips come from a shuffled bag, so nothing repeats until all were shown,
                            and a new run never starts on the tip the previous run ended on.
-   - CSKLoad.show()      : covers the screen with the loading art (bar creeps forward, tips rotate).
+   - CSKLoad.show()      : covers the screen with a random loading scene (bar creeps forward, tips rotate).
    - CSKLoad.hide(opts)  : finishes the bar to 100% and fades out. Stays up for at least MIN_MS so the
                            screen never just flashes, unless opts.fast is set (used for errors).
    Everything here is presentation only: it never reads or changes game state. */
@@ -28,6 +28,33 @@ var TIPS=[
  'The host can remove players from the waiting room.',
  'Ready up fast: the host can only start once everyone else is ready.'
 ];
+
+/* ---------- loading art ----------
+   Four scenes (ld-*.jpg, 1984x793). The first-boot splash is ALWAYS the black & white one; every loader after
+   that picks randomly from the other three, never the same one twice in a row.
+   x = horizontal focus (0..1) used when the screen is narrower than the art. bar = the painted progress
+   bar's inner rectangle in image pixels [x,y,w,h]: the live fill is laid exactly over it. */
+var ART=[
+ {f:'ld-bw.jpg',   x:.5,bar:[681,550,597,28]},
+ {f:'ld-night.jpg',x:.5,bar:[693,562,605,27]},
+ {f:'ld-day.jpg',  x:.5,bar:[691,566,613,27]},
+ {f:'ld-dusk.jpg', x:.5,bar:[691,566,613,27]}
+];
+var lastArt=0;
+function pickArt(){
+ var pool=[];for(var k=1;k<ART.length;k++)if(k!==lastArt)pool.push(k);
+ lastArt=pool[Math.random()*pool.length|0];
+ return ART[lastArt]}
+function setArt(img,a){
+ if(!img||!a)return;
+ var url=(window.CSKAssets&&CSKAssets.url&&CSKAssets.url(a.f))||a.f,st=img.parentNode;   /* local cached copy when we have one */
+ if(st&&st.style){st.style.setProperty('--oxn',a.x);st.style.setProperty('--bx',a.bar[0]);st.style.setProperty('--by',a.bar[1]);st.style.setProperty('--bw',a.bar[2]);st.style.setProperty('--bh',a.bar[3])}
+ img.dataset.art=a.f;img.src=url}
+window.CSKLoadArt={files:ART.map(function(a){return a.f}),pick:pickArt,set:setArt};
+var first=ART[0];
+window.CSKLoadArt.first=first;
+try{var pl=document.createElement('link');pl.rel='preload';pl.as='image';pl.href=first.f;pl.setAttribute('fetchpriority','high');document.head.appendChild(pl)}catch(e){}
+
 var ROTATE_MS=2300,FADE_MS=240,MIN_MS=1200;
 var bag=[],lastTip='';
 
@@ -56,7 +83,7 @@ var CSKTips={
 window.CSKTips=CSKTips;
 
 /* ---------- full-screen loader used for every screen switch ---------- */
-var el=null,fill=null,pct=null,tipEl=null,stopTips=null,iv=0,hideT=0,fadeT=0,
+var el=null,bgEl=null,fill=null,pct=null,tipEl=null,stopTips=null,iv=0,hideT=0,fadeT=0,
     shownAt=0,target=0,shown=0,closing=0,visible=0,safetyT=0;
 
 function paint(){var p=Math.round(shown);fill.style.width=shown+'%';pct.textContent=p+'%'}
@@ -82,6 +109,7 @@ var CSKLoad={
   closing=0;
   if(!visible){
    shownAt=Date.now();target=0;shown=0;paint();
+   if(bgEl)setArt(bgEl,pickArt());                /* a different random scene each time */
    el.hidden=false;
    void el.offsetWidth;                 /* let the browser see hidden=false before .on so the fade-in plays */
    el.classList.add('on');visible=1;
@@ -107,7 +135,7 @@ window.CSKLoad=CSKLoad;
 
 function init(){
  el=document.getElementById('csk-load');if(!el)return;
- fill=document.getElementById('ld-fill');pct=document.getElementById('ld-pct');tipEl=document.getElementById('ld-tip');
+ bgEl=document.getElementById('ld-bg');fill=document.getElementById('ld-fill');pct=document.getElementById('ld-pct');tipEl=document.getElementById('ld-tip');
  if(!fill||!pct||!tipEl)el=null}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

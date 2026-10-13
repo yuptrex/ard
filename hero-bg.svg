@@ -27,6 +27,19 @@
     </filter>
   </defs>
 
+  <style>
+    /* Knight eyes: lit most of the time, with a quick natural blink on a loop.
+       Two different timings/offsets so both knights don't blink in perfect unison. */
+    .hb-eye{fill:#ffd97a;transform-box:fill-box;transform-origin:center}
+    .hb-eye-l{animation:hbBlink 5.2s ease-in-out infinite}
+    .hb-eye-r{animation:hbBlink 6.1s ease-in-out infinite .35s}
+    @keyframes hbBlink{
+      0%,91%,100%{transform:scaleY(1)}
+      94%{transform:scaleY(.08)}
+      97%{transform:scaleY(1)}
+    }
+  </style>
+
   <rect width="1600" height="1000" fill="url(#skyGlow)"/>
 
   <!-- distant particles / embers -->
@@ -64,12 +77,16 @@
     <path d="M125 40 L150 80 L100 80 Z" fill="#ffb02e" opacity="0.9"/>
     <rect x="0" y="230" width="22" height="110" rx="8"/>
     <rect x="228" y="230" width="22" height="110" rx="8"/>
+    <ellipse class="hb-eye hb-eye-l" cx="108" cy="108" rx="5.5" ry="4.5"/>
+    <ellipse class="hb-eye hb-eye-r" cx="142" cy="108" rx="5.5" ry="4.5"/>
   </g>
   <g transform="translate(1180,560) scale(-1,1) translate(-250,0)" fill="url(#knightGrad)" opacity="0.92">
     <path d="M70 420 C40 420 20 395 20 360 L20 260 C20 210 45 170 90 150 L90 110 C90 90 105 75 125 75 C145 75 160 90 160 110 L160 150 C205 170 230 210 230 260 L230 360 C230 395 210 420 180 420 Z"/>
     <path d="M125 40 L150 80 L100 80 Z" fill="#ffb02e" opacity="0.9"/>
     <rect x="0" y="230" width="22" height="110" rx="8"/>
     <rect x="228" y="230" width="22" height="110" rx="8"/>
+    <ellipse class="hb-eye hb-eye-l" cx="108" cy="108" rx="5.5" ry="4.5"/>
+    <ellipse class="hb-eye hb-eye-r" cx="142" cy="108" rx="5.5" ry="4.5"/>
   </g>
 
   <!-- ground / arena floor with radial lines -->

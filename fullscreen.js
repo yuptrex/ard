@@ -32,6 +32,38 @@
     try{ var p=ext&&ext.call(document); if(p&&p.catch) p.catch(function(){}); }catch(e){}
   }
 
+  /* The whole game runs full screen. Rules:
+     - it goes full screen on the player's first tap/click/key after the page opens (browsers refuse without one),
+     - the game itself NEVER leaves full screen; only the player can (button or Esc),
+     - once the player has turned it off it stays off (remembered for this session, so Back to Home's page reload
+       does not force it back on); pressing the full-screen button turns it on again. */
+  var KEY='csk-fs-off',unloading=false;
+  function userOff(){try{return sessionStorage.getItem(KEY)==='1'}catch(e){return false}}
+  function setOff(v){try{v?sessionStorage.setItem(KEY,'1'):sessionStorage.removeItem(KEY)}catch(e){}}
+  window.addEventListener('beforeunload',function(){unloading=true});
+  window.addEventListener('pagehide',function(){unloading=true});
+  ['fullscreenchange','webkitfullscreenchange','MSFullscreenChange'].forEach(function(n){
+    document.addEventListener(n,function(){
+      if(unloading) return;               /* page reload also drops full screen: that is not the player choosing */
+      setOff(!isFs());
+    });
+  });
+  var GEST=['pointerup','mouseup','touchend','click','keydown'];
+  function onGesture(e){
+    if(e&&e.type==='keydown'&&e.key==='Escape') return;
+    if(isFs()||userOff()){ if(isFs()) stopGest(); return; }
+    enter();
+  }
+  function stopGest(){GEST.forEach(function(n){document.removeEventListener(n,onGesture,true)})}
+  GEST.forEach(function(n){document.addEventListener(n,onGesture,true)});
+  if(!userOff()) enter();                  /* works if the browser still allows it (e.g. after a tap on the previous page) */
+  ['fullscreenchange','webkitfullscreenchange','MSFullscreenChange'].forEach(function(n){
+    document.addEventListener(n,function(){
+      /* if full screen was dropped (player pressed Esc), start listening again so a later button press can re-enter */
+      if(!isFs()) GEST.forEach(function(g){document.addEventListener(g,onGesture,true)});
+    });
+  });
+
   function sync(){
     if(!btn) return;
     var on=isFs();
@@ -45,7 +77,7 @@
   });
   sync();
 
-  if(btn) btn.addEventListener('click',function(){ isFs()?leave():enter(); });
+  if(btn) btn.addEventListener('click',function(e){ e.stopPropagation(); if(isFs()){ setOff(true); leave(); } else { setOff(false); enter(); } },true);
 
   /* auto full screen when a game/room is started from home */
   function hook(id,ok){

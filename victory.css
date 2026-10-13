@@ -1,0 +1,28 @@
+#vs{position:fixed;inset:0;z-index:9000;background:#000;display:none;overflow:hidden}
+#vs.on{display:block;animation:vsin .5s ease-out}
+@keyframes vsin{from{opacity:0}to{opacity:1}}
+#vs-st{position:absolute;left:0;top:0;width:1672px;height:941px;transform-origin:0 0;background:url(victory-bg.png) 0 0/100% 100%;font-family:'Exo 2','Segoe UI',Arial,sans-serif;color:#eef3ff}
+#vs-st>*{position:absolute}
+.nm{left:700px;width:380px;height:32px;line-height:32px;font-weight:700;font-size:19px;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nm.w1{color:#ffe08a;text-shadow:0 0 8px rgba(255,190,50,.7)}
+.kl{left:1146px;width:110px;height:32px;line-height:32px;font-weight:800;font-size:19px}
+.kl:before{content:"\2620";margin-right:12px;font-size:20px}
+.vr-fx{left:564px;top:335px;width:705px;height:38px;border-radius:6px;pointer-events:none;overflow:hidden;animation:vglow 1.6s ease-in-out infinite}
+.vr-fx:after{content:"";position:absolute;top:0;bottom:0;width:130px;left:-150px;background:linear-gradient(100deg,transparent,rgba(255,236,160,.6),transparent);animation:vsw 2.4s linear infinite}
+@keyframes vsw{to{left:760px}}
+@keyframes vglow{50%{box-shadow:0 0 28px 7px rgba(255,190,50,.85),inset 0 0 14px 2px rgba(255,210,90,.6)}0%,100%{box-shadow:0 0 8px 1px rgba(255,190,50,.35),inset 0 0 4px rgba(255,210,90,.3)}}
+#vs-pic{left:352px;top:381px;width:112px;height:112px;border-radius:50%;background:#1a2233 center/cover;display:flex;align-items:center;justify-content:center;font-size:56px;font-weight:800;color:#ffc83a;box-shadow:0 0 0 3px #e8a919;animation:vglow 1.6s ease-in-out infinite}
+#vs-pic:before{content:"";position:absolute;inset:-12px;border-radius:50%;background:conic-gradient(from 0deg,transparent,rgba(255,220,100,.95),transparent 30%);-webkit-mask:radial-gradient(circle,transparent 66%,#000 68%,#000 76%,transparent 78%);mask:radial-gradient(circle,transparent 66%,#000 68%,#000 76%,transparent 78%);animation:vrot 2s linear infinite}
+@keyframes vrot{to{transform:rotate(360deg)}}
+#vs-pn{left:300px;top:497px;width:220px;height:40px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;color:#fff;overflow:hidden;white-space:nowrap;text-shadow:0 2px 8px #000}
+#vs-pk{left:388px;top:626px;width:80px;height:50px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:42px;color:#ffd23a;text-shadow:0 0 14px rgba(255,190,40,.9)}
+#vs-pv{left:590px;top:769px;width:495px;height:32px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:600;font-style:italic;font-size:16px;line-height:17px;color:#ffe4a0;text-shadow:0 0 10px rgba(255,190,60,.6),0 2px 4px #000;transition:opacity .5s}
+#vs-pv.f{opacity:0}
+#vs-home{left:1380px;top:25px;width:258px;height:58px;background:transparent;border:0;border-radius:29px;cursor:pointer;overflow:hidden;transition:transform .1s,box-shadow .2s;-webkit-tap-highlight-color:transparent}
+#vs-home:hover{box-shadow:0 0 22px 4px rgba(255,200,70,.55)}
+#vs-home:active{transform:scale(.93);background:rgba(255,200,70,.25)}
+#vs-home i{position:absolute;border-radius:50%;background:rgba(255,230,150,.7);transform:scale(0);animation:vrp .55s ease-out forwards;pointer-events:none}
+@keyframes vrp{to{transform:scale(1);opacity:0}}
+#vs-fs{left:1306px;top:27px;width:54px;height:54px;border-radius:50%;background:rgba(8,14,28,.75);border:2px solid #e8a919;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:transform .1s,box-shadow .2s;-webkit-tap-highlight-color:transparent}
+#vs-fs:hover{box-shadow:0 0 20px 4px rgba(255,200,70,.55)}
+#vs-fs:active{transform:scale(.88);background:rgba(255,200,70,.3)}

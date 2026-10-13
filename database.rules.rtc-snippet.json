@@ -1,5 +1,12 @@
 {
   "rules": {
+    "callsigns": {
+      "$key": {
+        ".read": "auth != null",
+        ".write": "auth != null && (!data.exists() || data.val() === auth.uid)",
+        ".validate": "newData.val() === auth.uid"
+      }
+    },
     "rooms": {
       "$code": {
         "rtc": { ".read": true, ".write": true }

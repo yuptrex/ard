@@ -1,0 +1,143 @@
+/* ===========================================================
+   Login screen (login-bg.jpg, 1672x941) + "Set your name" popup (setup-card.png)
+   Same approach as the home screen: one piece of artwork, stretched to fill
+   the screen, with real inputs / buttons laid exactly over the painted ones.
+   Positions are in artwork pixels (--x --y --w --h) -> % of the stage.
+   =========================================================== */
+#login{position:fixed;inset:0;z-index:900;display:block;background:#05080b;container-type:size;overflow:hidden;
+  touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;transition:opacity .35s ease}
+#login[hidden]{display:none}
+#login.lg-out{opacity:0;pointer-events:none}
+.lg-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;pointer-events:none;-webkit-user-drag:none}
+.lg-ui{position:absolute;inset:0;--u:min(100cqw / 1672, 100cqh / 941);
+  --ff:var(--csk-font-body,"Inter","Segoe UI",system-ui,sans-serif);--fd:var(--csk-font-display,"Rajdhani","Segoe UI",system-ui,sans-serif)}
+.lg-a{position:absolute;box-sizing:border-box;margin:0;
+  left:calc(var(--x) / 1672 * 100%);top:calc(var(--y) / 941 * 100%);
+  width:calc(var(--w) / 1672 * 100%);height:calc(var(--h) / 941 * 100%)}
+
+/* ---------- painted-style buttons (Google / LOGIN) ---------- */
+.lg-btn{padding:0;border:0;background:none;cursor:pointer;display:block;outline:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  transition:transform .12s cubic-bezier(.2,.8,.2,1),filter .15s}
+.lg-btn img{display:block;width:100%;height:100%;pointer-events:none;-webkit-user-drag:none;transition:filter .15s}
+@media (hover:hover){.lg-btn:not(.is-off):hover img{filter:brightness(1.08) saturate(1.08)}}
+.lg-btn:not(.is-off):active{transform:translateY(calc(3 * var(--u))) scale(.97);transition-duration:.06s}
+.lg-btn:focus-visible{outline:2px solid #ffd067;outline-offset:3px}
+.lg-btn.is-off{cursor:not-allowed}
+.lg-btn.is-off img{filter:grayscale(.7) brightness(.62)}
+#login.is-busy .lg-btn{cursor:progress}
+#login.is-busy .lg-btn img{filter:grayscale(.5) brightness(.75)}
+
+/* ---------- text fields (sit inside the painted field shells) ---------- */
+.lg-fld{border-radius:calc(13 * var(--u));transition:box-shadow .16s}
+.lg-fld:focus-within{box-shadow:0 0 0 calc(2 * var(--u)) #ffb02e,0 0 calc(16 * var(--u)) #ffb02e66}
+.lg-in{display:block;width:100%;height:100%;box-sizing:border-box;margin:0;border:0;outline:0;background:transparent;color:#fff;
+  padding:0 calc(22 * var(--u)) 0 calc(78 * var(--u));border-radius:inherit;
+  font:600 max(13px,calc(22 * var(--u))) var(--ff);letter-spacing:.01em;user-select:text;-webkit-user-select:text}
+.lg-in::placeholder{color:#7b8db3;font-weight:500}
+.lg-in:-webkit-autofill{-webkit-text-fill-color:#fff;transition:background-color 99999s}
+.lg-pw .lg-in{padding-right:calc(70 * var(--u))}
+.lg-eye{position:absolute;right:calc(12 * var(--u));top:50%;width:calc(46 * var(--u));height:calc(46 * var(--u));min-width:26px;min-height:26px;
+  transform:translateY(-50%);padding:0;border:0;background:none;cursor:pointer;color:#8ea6d3;display:flex;align-items:center;justify-content:center;
+  -webkit-tap-highlight-color:transparent;outline:0;border-radius:50%}
+.lg-eye svg{width:72%;height:72%;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.lg-eye .e-off{display:none}.lg-eye.on .e-off{display:block}.lg-eye.on .e-on{display:none}
+.lg-eye:hover,.lg-eye:focus-visible{color:#cfe0ff}
+.lg-eye:focus-visible{outline:2px solid #ffd067}
+
+/* ---------- terms checkbox ---------- */
+.lg-terms{display:flex;align-items:center;gap:calc(16 * var(--u));cursor:pointer;color:#c6d0e1;font:500 max(11px,calc(20 * var(--u))) var(--ff);white-space:nowrap;
+  -webkit-tap-highlight-color:transparent}
+.lg-terms input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.lg-box{flex:none;width:calc(33 * var(--u));height:calc(33 * var(--u));min-width:16px;min-height:16px;border-radius:calc(8 * var(--u));box-sizing:border-box;
+  border:calc(2.5 * var(--u)) solid #6f87b5;background:#0a1a35;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s,box-shadow .15s}
+.lg-box svg{width:74%;height:74%;fill:none;stroke:#fff;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.5);transition:opacity .12s,transform .16s cubic-bezier(.2,1.4,.4,1)}
+.lg-terms input:checked+.lg-box{background:linear-gradient(180deg,#2a98ff,#0e6ad4);border-color:#083a82;box-shadow:0 0 calc(10 * var(--u)) #1f8cff88}
+.lg-terms input:checked+.lg-box svg{opacity:1;transform:none}
+.lg-terms input:focus-visible+.lg-box{outline:2px solid #ffd067;outline-offset:2px}
+.lg-terms a{color:#1e90ff;font-weight:600;text-decoration:none;cursor:pointer}
+.lg-terms a:hover{text-decoration:underline}
+.lg-terms.shake{animation:lgShake .45s}
+.lg-terms.shake .lg-box{border-color:#ff6a5a;box-shadow:0 0 calc(12 * var(--u)) #ff5a4a99}
+@keyframes lgShake{0%,100%{transform:none}20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+
+/* ---------- status line ---------- */
+.lg-msg{display:flex;align-items:center;justify-content:center;text-align:center;font:600 max(11px,calc(19 * var(--u))) var(--ff);color:#9fd0ff;line-height:1.25;pointer-events:none;
+  text-shadow:0 1px 2px #000a}
+.lg-msg[data-k="bad"]{color:#ffb4ab}
+.lg-msg[data-k="ok"]{color:#a7f0b8}
+
+/* ---------- small full-screen button (top right) ---------- */
+.lg-fs{--s:clamp(30px,calc(46 * var(--u)),54px);position:absolute;top:max(10px,calc(20 * var(--u)),env(safe-area-inset-top,0px));
+  right:max(10px,calc(22 * var(--u)),env(safe-area-inset-right,0px));width:var(--s);height:var(--s);padding:0;border:0;background:none;color:#ffc24a;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;outline:0;
+  --oct:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);
+  filter:drop-shadow(0 2px 5px #000b);transition:transform .14s cubic-bezier(.2,.8,.2,1),filter .18s}
+.lg-fs::before{content:"";position:absolute;inset:0;background:linear-gradient(155deg,#fff0b8 0%,#ffc24a 38%,#e08a12 70%,#8a4a00 100%);clip-path:var(--oct);-webkit-clip-path:var(--oct)}
+.lg-fs::after{content:"";position:absolute;inset:calc(var(--s) * .1);background:radial-gradient(circle at 50% 28%,#22385a 0%,#0e1829 62%,#070c15 100%);clip-path:var(--oct);-webkit-clip-path:var(--oct)}
+.lg-fs svg{position:relative;z-index:1;width:56%;height:56%;fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 4px #ffb02eaa)}
+.lg-fs .f-co{display:none}.lg-fs.on .f-ex{display:none}.lg-fs.on .f-co{display:block}
+.lg-fs[hidden]{display:none}
+@media (hover:hover){.lg-fs:hover{transform:scale(1.08);filter:drop-shadow(0 2px 5px #000b) brightness(1.15)}}
+.lg-fs:active{transform:scale(.94);transition-duration:.06s}
+.lg-fs:focus-visible{outline:2px solid #ffd067;outline-offset:3px}
+
+/* ---------- terms dialog ---------- */
+.lg-modal{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:14px;background:#02060cd9;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.lg-modal[hidden]{display:none}
+.lg-modal-box{width:min(520px,100%);max-height:100%;overflow:auto;border-radius:14px;border:2px solid #ffb02e;background:linear-gradient(180deg,#10203a,#091426);color:#d5def0;
+  padding:18px 20px;font:500 14px/1.5 var(--ff);box-shadow:0 10px 40px #000a;user-select:text;-webkit-user-select:text}
+.lg-modal-box h2{margin:0 0 8px;font:700 24px var(--fd);letter-spacing:.06em;color:#ffd067}
+.lg-modal-box ul{margin:0 0 14px;padding-left:20px}.lg-modal-box li{margin:0 0 5px}
+.lg-modal-box button{display:block;margin:0 0 0 auto;padding:9px 26px;border:0;border-radius:10px;cursor:pointer;font:700 17px var(--fd);letter-spacing:.08em;color:#2a1700;background:linear-gradient(180deg,#ffd45a,#f59b12)}
+
+/* ===========================================================
+   "Set your name and password" popup
+   =========================================================== */
+#sp-pop{position:fixed;inset:0;z-index:950;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:8px;overflow:auto;
+  background:radial-gradient(ellipse at 50% 30%,#10203aee,#03060bf7 72%);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  animation:spFade .35s ease both;user-select:none;-webkit-user-select:none}
+#sp-pop.out{animation:spOut .4s ease both}
+@keyframes spFade{from{opacity:0}to{opacity:1}}
+@keyframes spOut{to{opacity:0}}
+.sp-card{--cw:min(94vw,calc((100vh - 52px) * 1.3057),780px);position:relative;flex:none;width:var(--cw);aspect-ratio:1042 / 798;--u:calc(var(--cw) / 1042);
+  --ff:var(--csk-font-body,"Inter","Segoe UI",system-ui,sans-serif);animation:spPop .5s cubic-bezier(.2,1.15,.35,1) both}
+@keyframes spPop{from{opacity:0;transform:translateY(24px) scale(.94)}to{opacity:1;transform:none}}
+.sp-art{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none;-webkit-user-drag:none}
+.sp-a{position:absolute;box-sizing:border-box;margin:0;
+  left:calc(var(--x) / 1042 * 100%);top:calc(var(--y) / 798 * 100%);width:calc(var(--w) / 1042 * 100%);height:calc(var(--h) / 798 * 100%)}
+.sp-in{display:block;width:100%;height:100%;box-sizing:border-box;margin:0;border:0;outline:0;background:transparent;color:#eaf2ff;
+  padding:0 calc(20 * var(--u)) 0 calc(24 * var(--u));font:700 max(13px,calc(31 * var(--u))) var(--ff);letter-spacing:.01em;user-select:text;-webkit-user-select:text}
+.sp-in::placeholder{color:#4f79b8;font-weight:700}
+.sp-in:disabled,.sp-in[readonly]{color:#ffd067;cursor:default}
+.sp-in:disabled::placeholder{color:#ffd067aa}
+.sp-pw .sp-in{padding-right:calc(84 * var(--u))}
+.sp-fld{border-radius:calc(14 * var(--u));transition:box-shadow .16s}
+.sp-fld:focus-within{box-shadow:0 0 0 calc(3 * var(--u)) #ffb02e,0 0 calc(22 * var(--u)) #ffb02e77}
+.sp-eye{position:absolute;right:calc(20 * var(--u));top:50%;width:calc(54 * var(--u));height:calc(54 * var(--u));min-width:26px;min-height:26px;transform:translateY(-50%);
+  padding:0;border:0;background:none;cursor:pointer;color:#4f94d4;display:flex;align-items:center;justify-content:center;border-radius:50%;outline:0;-webkit-tap-highlight-color:transparent}
+.sp-eye svg{width:84%;height:84%;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.sp-eye .e-off{display:none}.sp-eye.on .e-off{display:block}.sp-eye.on .e-on{display:none}
+.sp-eye:hover,.sp-eye:focus-visible{color:#9fd0ff}.sp-eye:focus-visible{outline:2px solid #ffd067}
+.sp-msg{display:flex;align-items:center;justify-content:center;text-align:center;font:600 max(9px,calc(17 * var(--u))) var(--ff);color:#8fb4e8;line-height:1.1;pointer-events:none;text-shadow:0 1px 2px #000a}
+.sp-msg[data-k="bad"]{color:#ff9d92}.sp-msg[data-k="ok"]{color:#a7f0b8}
+
+/* CONTINUE: dim until both boxes are valid, then it glows */
+.sp-go{padding:0;border:0;background:none;display:block;cursor:pointer;outline:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  transition:transform .12s cubic-bezier(.2,.8,.2,1)}
+.sp-go img{display:block;width:100%;height:100%;pointer-events:none;-webkit-user-drag:none;transition:filter .25s}
+.sp-go.is-off{cursor:not-allowed}
+.sp-go.is-off img{filter:grayscale(.85) brightness(.48)}
+.sp-go.on{animation:spGlow 1.7s ease-in-out infinite}
+.sp-go.on:active{transform:translateY(calc(4 * var(--u))) scale(.97)}
+.sp-go.work{animation:none;cursor:progress}.sp-go.work img{filter:grayscale(.4) brightness(.7)}
+@keyframes spGlow{
+  0%,100%{filter:drop-shadow(0 0 calc(8 * var(--u)) #ffc83a88) brightness(1)}
+  50%{filter:drop-shadow(0 0 calc(26 * var(--u)) #ffe27af2) brightness(1.13)}}
+.sp-go:focus-visible{outline:2px solid #ffd067;outline-offset:3px}
+.sp-link{flex:none;border:0;background:none;padding:6px 10px;cursor:pointer;color:#9db6dc;font:600 14px var(--ff,Inter,system-ui,sans-serif);text-decoration:underline;text-underline-offset:3px}
+.sp-link:hover,.sp-link:focus-visible{color:#fff}
+
+@media (prefers-reduced-motion:reduce){#sp-pop,#sp-pop *{animation-duration:.01ms!important}.lg-terms.shake{animation:none}}
+
+/* signed out: the home screen is not rendered at all (no art fetched or decoded) until boot-gate.js unlocks it */
+html.csk-pre #menu{display:none!important}

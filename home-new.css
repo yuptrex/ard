@@ -1,0 +1,129 @@
+/* New home screen: art 1672x941 stretched to screen, real buttons over painted ones */
+#menu{display:block;position:fixed;inset:0;padding:0;overflow:hidden;background:#05080b;touch-action:manipulation}
+#menu::before,#menu::after{content:none!important}
+.hs{position:absolute;inset:0;container-type:size;overflow:hidden;user-select:none;-webkit-user-select:none;--u:min(100cqw / 1672, 100cqh / 941)}
+.hs-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;pointer-events:none;-webkit-user-drag:none}
+.hs-ui,#acc{position:absolute;inset:0}
+#acc{pointer-events:none}#acc>*{pointer-events:auto}
+.hb,.nmv,.lvl,.lvn{position:absolute;left:calc(var(--x)/1672*100%);top:calc(var(--y)/941*100%);width:calc(var(--w)/1672*100%);height:calc(var(--h)/941*100%);margin:0;box-sizing:border-box}
+.hb{padding:0;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;outline:0;border-radius:calc(18*var(--u));
+ --bgw:calc(1672/var(--w)*100%);--bgh:calc(941/var(--h)*100%);--bgx:calc(var(--x)/(1672 - var(--w))*100%);--bgy:calc(var(--y)/(941 - var(--h))*100%);
+ transition:transform .12s cubic-bezier(.2,.8,.2,1)}
+.hb .face{position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:url(home-art2.jpg) no-repeat;background-size:var(--bgw) var(--bgh);background-position:var(--bgx) var(--bgy);opacity:0;transition:filter .12s,opacity .08s}@media (hover:hover){.hb:hover .face{opacity:1;filter:brightness(1.18) saturate(1.15)}.hb:hover{transform:scale(1.03)}}
+.hb:active,.hb.is-down{transform:scale(.95) translateY(2%)}
+.hb:active .face,.hb.is-down .face{opacity:1;filter:brightness(1.45) saturate(1.2)}
+.hb:focus-visible{outline:2px solid #ffd067;outline-offset:3px}
+.hb .rip{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none}
+.hb .rip b{position:absolute;width:30%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(0);background:radial-gradient(circle,#fffffff0,#ffffff00 70%);mix-blend-mode:screen;animation:rp .5s ease-out forwards}
+@keyframes rp{to{transform:translate(-50%,-50%) scale(5.5);opacity:0}}
+/* selected mode */
+.hb.sel{box-shadow:0 0 0 calc(3*var(--u)) #ffd067,0 0 calc(22*var(--u)) #ffb02ecc}
+.hb.sel .face{opacity:1;filter:brightness(1.12) saturate(1.1)}
+/* profile */
+/* Slot (dark area incl. its black rim) measured from the art: x33..125 y46..131.5 inside the 128x128 button at (16,22). Photo fills all of it so no empty gap shows against the gold frame. */
+#pav .pho{position:absolute;left:13.28125%;top:18.75%;width:71.875%;height:66.8%;display:none;overflow:hidden;background:#0c1a2e;box-shadow:inset 0 0 0 calc(1.5*var(--u)) #000b;clip-path:polygon(5% 0,95% 0,100% 5%,100% 95%,95% 100%,5% 100%,0 95%,0 5%)}
+#pav .pho img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;display:block;pointer-events:none;-webkit-user-drag:none}
+#acc[data-photo="1"] #pav .pho{display:block}
+/* profile frame is a display piece: no press / hover / focus feedback */
+#pav,#pav:hover,#pav:active,#pav.is-down{transform:none!important;transition:none;cursor:default;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
+#pav .face,#pav:hover .face,#pav:active .face,#pav.is-down .face{opacity:0!important;filter:none!important}
+#pav:focus,#pav:focus-visible{outline:0}
+#pav .rip{display:none!important}
+#menu #nm{display:none!important}
+.nmv{--x:146;--y:49;--w:284;--h:46;display:flex;align-items:center;justify-content:center;overflow:hidden;pointer-events:none!important;color:#fff;font:700 calc(32*var(--u)) Rajdhani,system-ui,sans-serif;text-shadow:0 1px 0 #000a}
+.nmv span{display:inline-block;white-space:nowrap}
+.nmv.mq{justify-content:flex-start;-webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+.nmv.mq span{animation:mq var(--d,6s) linear infinite alternate}
+@keyframes mq{0%,15%{transform:translateX(0)}85%,100%{transform:translateX(var(--s))}}
+.lvn{--x:187;--y:100;--w:24;--h:24;display:flex;align-items:center;justify-content:center;color:#fff;font:800 calc(24*var(--u)) Rajdhani,system-ui,sans-serif;text-shadow:0 1px 0 #000c,0 0 calc(6*var(--u)) #3ab8ff99;pointer-events:none!important;white-space:nowrap}
+.lvn[data-d="2"]{font-size:calc(20*var(--u))}.lvn[data-d="3"]{font-size:calc(15*var(--u))}
+.lvn.up{animation:lvup .9s ease-out}
+@keyframes lvup{0%{transform:scale(1)}30%{transform:scale(1.5);color:#ffe27a;text-shadow:0 0 calc(12*var(--u)) #ffc24a}100%{transform:scale(1)}}
+.lvl{--x:209;--y:100;--w:219;--h:24;position:absolute;pointer-events:none!important}
+/* steel track with a riveted rim */
+.lvl .lvt{position:absolute;left:0;top:0;bottom:0;right:calc(21*var(--u));overflow:hidden;border-radius:calc(4*var(--u));background:linear-gradient(#050b15,#12213a 50%,#060d19);box-shadow:inset 0 0 0 calc(1.5*var(--u)) #8497b3,inset 0 calc(2.5*var(--u)) calc(4*var(--u)) #000d}
+/* blade-shaped fill: segmented steel-blue plate ending in a pointed, gold-lit tip */
+.lvl .lvf{position:absolute;left:calc(2*var(--u));top:calc(2*var(--u));bottom:calc(2*var(--u));width:0;overflow:hidden;
+ clip-path:polygon(0 0,calc(100% - 7*var(--u)) 0,100% 50%,calc(100% - 7*var(--u)) 100%,0 100%);
+ background:linear-gradient(90deg,transparent calc(100% - 12*var(--u)),#ffe9a0cc calc(100% - 2*var(--u)),#fff6d0),linear-gradient(#e6f6ff 0,#8fd0ff 22%,#2a86ff 55%,#0b3f9e 100%);
+ transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.lvl .lvf::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 42%,#ffffffa0 50%,transparent 58%);background-size:260% 100%;animation:lvsh 3s linear infinite}
+@keyframes lvsh{from{background-position:140% 0}to{background-position:-40% 0}}
+/* plate seams every 10% + top gloss */
+.lvl .lvg{position:absolute;inset:0;border-radius:inherit;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(10% - 1.5*var(--u)),#0009 calc(10% - 1.5*var(--u)),#0009 10%),linear-gradient(#ffffff2e,#ffffff00 45%,#00000040)}
+/* heraldic shield with the next level */
+.lvl .lvx{position:absolute;right:0;top:calc(-1*var(--u));bottom:calc(-1*var(--u));width:calc(24*var(--u));isolation:isolate;display:flex;align-items:flex-start;justify-content:center;padding-top:calc(3.5*var(--u));box-sizing:border-box;
+ font:800 calc(15*var(--u)) Rajdhani,system-ui,sans-serif;color:#fff1bf;text-shadow:0 1px 0 #000d;
+ background:linear-gradient(#ffe58a,#c98a1c 70%,#8a5a0e);clip-path:polygon(0 0,100% 0,100% 56%,50% 100%,0 56%)}
+.lvl .lvx::before{content:"";position:absolute;inset:calc(1.8*var(--u));z-index:-1;background:linear-gradient(#1d3f7a,#0a1c3d);clip-path:polygon(0 0,100% 0,100% 56%,50% 100%,0 56%)}
+.lvl .lvx[data-m]{font-size:calc(8*var(--u));padding-top:calc(6*var(--u))}
+@media (prefers-reduced-motion:reduce){.lvl .lvf::after{animation:none}}
+/* full-screen: show "exit" icon over the art when on */
+#fsb .fco{position:absolute;inset:0;margin:auto;width:56%;height:56%;display:none;fill:none;stroke:#ffc24a;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+#fsb.on{background:radial-gradient(circle at 50% 28%,#22385a,#0e1829 62%,#070c15);box-shadow:inset 0 0 0 calc(4*var(--u)) #e9a12a}
+#fsb.on .fco{display:block}
+/* connection pill */
+.hs-cs{display:none;position:absolute;left:50%;bottom:2%;transform:translateX(-50%);align-items:center;gap:8px;padding:6px 14px;border:1px solid #ff5a4a88;border-radius:999px;background:#0a0f18e6;color:#ffb4ab;font:700 14px Inter,system-ui,sans-serif;cursor:pointer}
+.hs-cs[data-s="bad"]{display:flex}.hs-cs i{width:10px;height:10px;border-radius:50%;background:#ff5a4a}
+/* room popup: painted cards with real buttons/inputs on top */
+#pop{position:absolute;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;background:#000b;animation:pf .18s}
+#pop[hidden]{display:none}#pop.closing{animation:pfo .16s forwards}
+@keyframes pf{from{opacity:0}}@keyframes pfo{to{opacity:0}}
+.zc{--bgurl:none;position:relative;flex:none;aspect-ratio:var(--W)/var(--H);width:min(86cqw,calc(84cqh*var(--W)/var(--H)),640px);container-type:inline-size;filter:drop-shadow(0 12px 28px #000c)}
+.zc.zs{width:min(80cqw,calc(84cqh*var(--W)/var(--H)),420px)}
+.zc[hidden]{display:none}
+.zc.in{animation:zin .3s cubic-bezier(.2,.9,.25,1.15)}
+.zc.out{animation:zout .16s ease-in forwards;pointer-events:none}
+@keyframes zin{from{opacity:0;transform:translateY(5%) scale(.82)}}
+@keyframes zout{to{opacity:0;transform:scale(.9)}}
+.zbg{position:absolute;inset:0;background:center/100% 100% no-repeat;pointer-events:none}
+.zb,.zi{position:absolute;left:calc(var(--x)/var(--W)*100%);top:calc(var(--y)/var(--H)*100%);width:calc(var(--w)/var(--W)*100%);height:calc(var(--h)/var(--H)*100%);margin:0;box-sizing:border-box}
+.zb{padding:0;border:0;background:none;cursor:pointer;outline:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation;border-radius:10%/22%;transition:transform .12s cubic-bezier(.2,.8,.2,1)}
+.zb.zx{border-radius:22%}
+.zb .face{position:absolute;inset:0;border-radius:inherit;pointer-events:none;background-repeat:no-repeat;background-image:inherit;opacity:0;transition:filter .12s,opacity .08s;
+ background-size:calc(var(--W)/var(--w)*100%) calc(var(--H)/var(--h)*100%);background-position:calc(var(--x)/(var(--W) - var(--w))*100%) calc(var(--y)/(var(--H) - var(--h))*100%)}
+#pmain .face{background-image:url(rm-main.webp)}#pnew .face{background-image:url(rm-create.webp)}#pcode .face{background-image:url(rm-join.webp)}@media (hover:hover){.zb:hover .face{opacity:1;filter:brightness(1.18) saturate(1.15)}.zb:hover{transform:scale(1.025)}}
+.zb:active,.zb.is-down{transform:scale(.95) translateY(2%)}
+.zb:active .face,.zb.is-down .face{opacity:1;filter:brightness(1.45) saturate(1.2)}
+.zb:focus-visible{outline:2px solid #ffd067;outline-offset:2px}
+.zb .rip{position:absolute;inset:0;overflow:hidden;border-radius:inherit;pointer-events:none}
+.zb .rip b{position:absolute;width:30%;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%) scale(0);background:radial-gradient(circle,#fffffff0,#ffffff00 70%);mix-blend-mode:screen;animation:rp .5s ease-out forwards}
+#pop input.zi{position:absolute;left:calc(var(--x)/var(--W)*100%);top:calc(var(--y)/var(--H)*100%);width:calc(var(--w)/var(--W)*100%);height:calc(var(--h)/var(--H)*100%);margin:0;padding:0 2%;box-sizing:border-box;border:0;border-radius:6px;background:transparent;color:#fff;outline:0;font:800 4.3cqw Rajdhani,system-ui,sans-serif;letter-spacing:.03em;text-transform:uppercase;box-shadow:none;transition:box-shadow .15s}
+#pop input.zi:hover{border:0}
+#pop input.zi:focus,#pop input.zi:focus-visible{outline:0;border:0;box-shadow:none}
+#pop input#rm{text-align:center;letter-spacing:.3em;font-size:7cqw;padding-left:calc(2% + .3em)}
+#pop input.zi.bad{animation:sk .35s;box-shadow:inset 0 -3px 0 #ff5a4a}
+@keyframes sk{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+/* Portrait phone: no "rotate" screen on login/home; the whole screen is turned sideways instead */
+@media (orientation:portrait) and (pointer:coarse){
+ #menu,#login{inset:auto!important;top:0!important;left:100vw!important;left:100dvw!important;width:100vh!important;width:100dvh!important;height:100vw!important;height:100dvw!important;transform-origin:0 0;transform:rotate(90deg)}
+}
+
+/* ===== one pop-in transition for every screen/dialog (same feel as the Room popup) ===== */
+@keyframes zinF{from{opacity:0;transform:translateY(3%) scale(.92)}}
+#lob:not([hidden]),#login:not([hidden]),#st:not([hidden]),#ed:not([hidden]){animation:zinF .32s cubic-bezier(.2,.9,.25,1.12)}
+#pm:not([hidden]){animation:pf .18s}
+#pm:not([hidden]) .box{animation:zin .3s cubic-bezier(.2,.9,.25,1.15) both}
+#csk-load.on .sp-stage{animation:zinF .34s cubic-bezier(.2,.9,.25,1.12)}@media (prefers-reduced-motion:reduce){#lob,#login,#st,#ed,#pm .box,#csk-load .sp-stage{animation:none!important}}
+
+/* ===== lock-down: no zoom / long-press / selection ===== */
+html,body{touch-action:pan-x pan-y;overscroll-behavior:none;-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+*{-webkit-touch-callout:none}
+img,svg,canvas{-webkit-user-drag:none;user-drag:none}
+input,textarea{-webkit-user-select:text;user-select:text}
+/* ===== room popup: pure fade in / fade out ===== */
+#pop{animation:pf .25s ease both}
+#pop.closing{animation:pfo .2s ease forwards}
+#pop .zc{position:absolute;left:50%;top:50%;translate:-50% -50%;margin:0}
+.zc.in{animation:zfi .25s ease both}
+.zc.out{animation:zfo .2s ease forwards;pointer-events:none}
+@keyframes zfi{from{opacity:0}to{opacity:1}}
+@keyframes zfo{from{opacity:1}to{opacity:0}}
+
+/* ===== living art: gems + sword magic ===== */
+.gem{position:absolute;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;z-index:3;mix-blend-mode:screen;opacity:0;
+ background:radial-gradient(circle,#fff6 0,#ff7a8acc 18%,#ff2a4a77 45%,#ff102000 72%);animation:gemP 4.4s ease-in-out infinite}
+@keyframes gemP{0%,100%{opacity:0;scale:.8}50%{opacity:.95;scale:1.12}}
+.swf{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+body.noanim .gem{animation:none;opacity:.2}
+@media (prefers-reduced-motion:reduce){.gem{animation:none;opacity:.25}.swf{display:none}}
